@@ -1,10 +1,8 @@
+from distutils.command.install_data import install_data
 from google.appengine.ext import db
 
-from models.entities.treasure import Treasure
-from models.entities.snapshot import Snapshot
+from models import Treasure, Snapshot
 from models.entities.game import Game
-from models.entities.user import User
-from models.entities.zone import Zone
 
 
 def get_or_insert_game(zone=None, treasures=None, owner=None, name=None, is_active=True):
@@ -82,39 +80,6 @@ def exists_game(game=None):
     return Game.get_by_key_name(key_names=game.owner.email + "_" + game.name) is not None
 
 
-def get_all_user():
-    return User.all()
-
-
-def set_user_twitter_tag(user, tag):
-    user.twitter_tag = tag
-    user.put()
-
-
-def delete_twitter_tag(user):
-    user.twitter_tag = None
-    user.put()
-
-
-def set_user_facebook_tag(user, tag, _id):
-    user.facebook_tag = tag
-    user.facebook_tag_id = _id
-    user.put()
-
-
-def delete_facebook_tag(user):
-    user.facebook_tag = None
-    user.facebook_tag_id = None
-    user.put()
-
-
-def get_or_insert_user(email=None, name=None, surname="", picture=None):
-    if name is None or email is None or picture is None:
-        return None
-    user = User.get_or_insert(key_name=email, email=email, name=name, surname=surname, picture=picture)
-    return user
-
-
 def create_treasure(lat=None, lon=None, text=None, game=None):
     """
     Create and returns a treasure if doesnt exists one in the db with the latitude and longitude provided.
@@ -157,8 +122,7 @@ def create_snapshot(user=None, treasure=None, img=None):
     :return: Snapshot in case that all parameters are provided. Otherwise its returns a None
     """
     if user is not None and treasure is not None and img is not None:
-        return Snapshot.get_or_insert(key_name=user.email + '_' + treasure.lat + '_' + treasure.lon, user=user,
-                                      treasure=treasure, img=img)
+        return Snapshot.get_or_insert(key_name=user.email + '_' + treasure.lat + '_' + treasure.lon, user=user, treasure=treasure, img=img)
     else:
         return None
 
@@ -178,101 +142,3 @@ def update_snapshot(snapshot=None):
     :param snapshot(Snapshot): snapshot to update
     """
     Snapshot.save(snapshot)
-
-
-""" 
-CRUD User       
-"""
-
-
-def user_all():
-    data = User.all()
-    return data
-
-
-#  get user info
-def get_user_one(id):
-    user = db.get(db.Key.from_path('User', id))
-    return user
-
-
-#  new user
-def insert_user_new(email, name, surname, picture):
-    user = User(
-        email=str(email),
-        name=str(name),
-        surname=str(surname),
-        picture=str(picture),
-    )
-    user.put()
-
-
-def user_update_model(id, name, email, surname, picture):
-    user_id = int(id)
-    user = db.get(db.Key.from_path('User', user_id))
-    user.email = email
-    user.name = name
-    user.surname = surname
-    user.picture = picture
-    user.put()
-
-#  delete user
-def user_delete_model(id):
-    if id:
-        user = db.get(db.Key.from_path('User', id))
-        db.delete(user)
-
-
-""" 
-CRUD Zone       
-"""
-
-# zone list
-def get_zone_all():
-    data = Zone.all()
-    return data
-
-#  get zona info
-def zone_one_model(id):
-    zone = db.get(db.Key.from_path('Zone', id))
-    return zone
-
-#  new zone
-def insert_zone_new(name, latitude, longitude, height, width):
-        zone = Zone(
-            name=name,
-            latitude=latitude,
-            longitude=longitude,
-            height=height,
-            width=width,
-        )
-        zone.put()
-
-#  delete edit
-def zone_edit_model(id, name, latitude, longitude, height, width):
-        zone_id = int(id)
-        zone = db.get(db.Key.from_path('Zone', zone_id))
-        zone.name = name
-        zone.latitude = latitude
-        zone.longitude = longitude
-        zone.height = height
-        zone.width = width
-        zone.put()
-
-#  delete zone
-def zone_delete_model(id):
-    if id:
-        zone = db.get(db.Key.from_path('Zone', id))
-        db.delete(zone)
-
-
-"""
-SEARCH FOR GAME
-"""
-
-def game_search(keyword):
-    if keyword:
-        keyword = str(keyword)
-        q = Game.all()
-        result = q.filter("game_name =", keyword)
-        return render_template('game_search.html', data=result)
