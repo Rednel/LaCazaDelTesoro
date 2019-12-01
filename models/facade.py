@@ -1,9 +1,8 @@
+from distutils.command.install_data import install_data
 from google.appengine.ext import db
 
-from models.entities.treasure import Treasure
-from models.entities.snapshot import Snapshot
+from models import Treasure, Snapshot
 from models.entities.game import Game
-from models.entities.user import User
 
 
 def get_or_insert_game(zone=None, treasures=None, owner=None, name=None, is_active=True):
@@ -79,39 +78,6 @@ def exists_game(game=None):
     if game is None or game.name is None or game.owner is None or game.owner.email is None:
         return False
     return Game.get_by_key_name(key_names=game.owner.email + "_" + game.name) is not None
-
-
-def get_all_user():
-    return User.all()
-
-
-def set_user_twitter_tag(user, tag):
-    user.twitter_tag = tag
-    user.put()
-
-
-def delete_twitter_tag(user):
-    user.twitter_tag = None
-    user.put()
-
-
-def set_user_facebook_tag(user, tag, _id):
-    user.facebook_tag = tag
-    user.facebook_tag_id = _id
-    user.put()
-
-
-def delete_facebook_tag(user):
-    user.facebook_tag = None
-    user.facebook_tag_id = None
-    user.put()
-
-
-def get_or_insert_user(email=None, name=None, surname="", picture=None):
-    if name is None or email is None or picture is None:
-        return None
-    user = User.get_or_insert(key_name=email, email=email, name=name, surname=surname, picture=picture)
-    return user
 
 
 def create_treasure(lat=None, lon=None, text=None, game=None):
