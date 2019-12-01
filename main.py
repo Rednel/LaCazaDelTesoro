@@ -1,11 +1,15 @@
-from flask import Flask
+from flask import Flask, render_template, redirect, request
+from google.appengine.ext import db
+
+from models.entities.user import User
+from models.facade import get_all_user
 
 app = Flask(__name__)
 
 
 @app.route('/')
-def hello_world():
-    return 'Hello World!'
+def home():
+    return render_template('index.html')
 
 
 """ 
@@ -16,30 +20,70 @@ CRUD User routes
 # user list
 @app.route('/user_all')
 def user_all():
-    return 'Hello World!'
+    data = User.all()
+    return render_template('user_all.html', data=data)
 
 
 #  get user info
-@app.route('/user_one')
-def user_one():
-    return 'Hello World!'
+@app.route('/user_one/<id>')
+def user_one(id):
+    user_id = int(id)
+    user = db.get(db.Key.from_path('User', user_id))
+    return render_template('user_one.html', user=user)
+
+
+#  new user
+@app.route('/user_new', methods=['GET', 'POST'])
+def user_new():
+    if request.method == 'POST':
+        user = User(
+            user_name=request.form.get('username'),
+            email=request.form.get('email'),
+            first_name=request.form.get('firstname'),
+            last_name=request.form.get('lastname'),
+            gender=request.form.get('gender'),
+            role='user'  # por defecto
+        )
+        user.put()
+        return redirect('/user_all')
+    else:
+        return render_template('user_new.html')
 
 
 #  update user info
-@app.route('/user_edit')
-def user_edit():
-    return 'Hello World!'
+@app.route('/user_edit/<id>', methods=['GET', 'POST'])
+def user_edit(id):
+    if request.method == 'POST':
+        user_id = int(id)
+        user = db.get(db.Key.from_path('User', user_id))
+        user.user_name = str(request.form.get('username'))
+        user.email = str(request.form.get('email'))
+        user.first_name = 'Tarek'
+        user.last_name = 'Khalfaoui'
+        user.gender = 'male'
+        user.role = 'user'
+        user.put()
+        return redirect('/user_all')
+
+    else:
+        user_id = int(id)
+        user = db.get(db.Key.from_path('User', user_id))
+        return render_template('user_edit.html', user=user)
 
 
 #  delete user
-@app.route('/user_delete')
-def user_delete():
-    return 'Hello World!'
+@app.route('/user_delete/<id>')
+def user_delete(id):
+    user_id = int(id)
+    user = db.get(db.Key.from_path('User', user_id))
+    db.delete(user)
+    return redirect('/user_all')
 
 
 """ 
 CRUD Zona routes       
 """
+
 
 # zona list
 @app.route('/zona_all')
