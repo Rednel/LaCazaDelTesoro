@@ -1,8 +1,8 @@
-from distutils.command.install_data import install_data
 from google.appengine.ext import db
 
-from models import Treasure, Snapshot
 from models.entities.game import Game
+from models.entities.treasure import Treasure
+from models.entities.snapshot import Snapshot
 
 
 def get_or_insert_game(zone=None, treasures=None, owner=None, name=None, is_active=True):
@@ -80,20 +80,28 @@ def exists_game(game=None):
     return Game.get_by_key_name(key_names=game.owner.email + "_" + game.name) is not None
 
 
-def create_treasure(lat=None, lon=None, text=None, game=None):
+def create_treasure(lat=None, lon=None, description=None, game=None):
     """
     Create and returns a treasure if doesnt exists one in the db with the latitude and longitude provided.
     If it exists just returns the treasure.
     :param lat(double): lattitude
     :param lon(double): longitude
-    :param text(string): treasure description, optional
+    :param description(string): treasure description, optional
     :param game(Game): game owner of the treasure
     :return: Treasure
     """
     if lat is not None and lon is not None:
-        return Treasure.get_or_insert(key_name=lat + '_' + lon, lat=lat, lon=lon, text=text, game=game)
+        return Treasure.get_or_insert(key_name=str(lat) + '_' + str(lon), lat=lat, lon=lon, description=description, game=game)
     else:
         return None
+
+
+def get_treasures():
+    """
+
+    :return: all treasures in the database
+    """
+    return Treasure.all()
 
 
 def remove_treasure(treasure=None):
@@ -122,7 +130,8 @@ def create_snapshot(user=None, treasure=None, img=None):
     :return: Snapshot in case that all parameters are provided. Otherwise its returns a None
     """
     if user is not None and treasure is not None and img is not None:
-        return Snapshot.get_or_insert(key_name=user.email + '_' + treasure.lat + '_' + treasure.lon, user=user, treasure=treasure, img=img)
+        return Snapshot.get_or_insert(key_name=user.email + '_' + treasure.lat + '_' + treasure.lon, user=user,
+                                      treasure=treasure, img=img)
     else:
         return None
 
