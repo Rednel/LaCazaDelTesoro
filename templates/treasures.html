@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de tesoros</title>
+</head>
+<body>
+<div class="row">
+    <div class="col-lg-12 text-center">
+        <h1>Tesoros <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span></h1>
+
+    </div>
+</div>
+<br/>
+<br/>
+
+{% if treasures.count() > 0 %}
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <table class="table">
+                <thead>
+                <th>Latitud</th>
+                <th>Longitud</th>
+                <th>Descripci&oacute;n</th>
+                <th>Acción 1</th>
+                </thead>
+                <tbody>
+                {% for treasure in treasures %}
+                    <tr>
+                        <td>{{ treasure.lat }}</td>
+                        <td>{{ treasure.lon }}</td>
+                        <td>{{ treasure.description }}</td>
+                        <td>
+                            <a class="btn btn-warning" href="/removeTreasure/latitude={{ treasure.lat }}&longitude={{ treasure.lon }}">
+                                Eliminar tesoro defectuoso
+                            <span style="margin-left: 5px;" class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+{% else %}
+    <div class="row">
+        <div class="col-lg-12 text-center">
+            <div class="col-md-3"></div>
+            <div class="col-md-6 bg-warning warning_mesagge">
+                <label>No existen tesoros aun.</label>
+            </div>
+            <div class="col-md-3"></div>
+
+        </div>
+    </div>
+
+{% endif %}
+
+<script type="text/javascript">
+    window.onload = function () {
+        if (!window.location.hash) {
+            window.location = window.location + '#loaded';
+            window.location.reload();
+        }
+    }
+</script>
+
+<br/>
+<a class="btn btn-primary" href="/addTreasure">
+    Crear tesoro
+    <span style="margin-left: 5px;" class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
+</a>
+<br/>
+
+</body>
+</html>
