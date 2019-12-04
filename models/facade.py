@@ -104,13 +104,14 @@ def get_treasures():
     return Treasure.all()
 
 
-def remove_treasure(treasure=None):
+def remove_treasure(treasure_id=None):
     """
     Removes a treasure.
-    :param treasure(Treasure): treasure to remove
+    :param treasure_id: treasure id to remove
     :raise: TransactionFailedError: if the data could not be committed.
     """
-    db.delete(treasure)
+    treasure_to_delete = db.get(db.Key.from_path('Treasure', treasure_id))
+    db.delete(treasure_to_delete)
 
 
 def update_treasure(treasure=None):
