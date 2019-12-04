@@ -32,7 +32,7 @@
                         <td>{{ treasure.lon }}</td>
                         <td>{{ treasure.description }}</td>
                         <td>
-                            <a class="btn btn-warning" href="/removeTreasure/latitude={{ treasure.lat }}&longitude={{ treasure.lon }}">
+                            <a class="btn btn-warning" href="/treasures/remove/latitude={{ treasure.lat }}&longitude={{ treasure.lon }}">
                                 Eliminar tesoro defectuoso
                             <span style="margin-left: 5px;" class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
                             </a>
@@ -68,7 +68,7 @@
 </script>
 
 <br/>
-<a class="btn btn-primary" href="/addTreasure">
+<a class="btn btn-primary" href="/treasures/add">
     Crear tesoro
     <span style="margin-left: 5px;" class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
 </a>
