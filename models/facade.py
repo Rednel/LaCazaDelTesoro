@@ -1,6 +1,7 @@
 from google.appengine.ext import db
 
-from models import Treasure, Snapshot
+from models.entities.treasure import Treasure
+from models.entities.snapshot import Snapshot
 from models.entities.game import Game
 from models.entities.user import User
 
