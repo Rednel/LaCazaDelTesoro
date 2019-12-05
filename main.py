@@ -1,15 +1,30 @@
-from flask import Flask, render_template, redirect, request
+from flask import Flask, render_template, redirect, request, session
 from google.appengine.ext import db
-
+import os
+from views.google import google_bp, login_required
+import requests_toolbelt.adapters.appengine
 from models.entities.user import User
-from models.facade import get_all_user
+from views.google import google_view
+
+# Patch to fix AppEngine
+requests_toolbelt.adapters.appengine.monkeypatch()
 
 app = Flask(__name__)
+app.secret_key = os.getenv("SECRET_KEY")
+
+app.register_blueprint(google_bp, url_prefix="/")
+app.register_blueprint(google_view, url_prefix="/google")
 
 
 @app.route('/')
 def home():
     return render_template('index.html')
+
+
+@app.route('/test', methods=['GET'])
+@login_required
+def test_oauth(user):
+    return "You are {email} on Google".format(email=user.email)
 
 
 """ 
@@ -110,4 +125,4 @@ def zona_delete():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

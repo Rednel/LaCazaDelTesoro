@@ -6,4 +6,5 @@ class Zone(db.Model):
     longitude = db.StringProperty(required=True)
     height = db.StringProperty()
     width = db.StringProperty()
+    # game = db.ReferenceProperty(Zone, collection_name="zone", required=True)
 

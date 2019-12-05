@@ -1,4 +1,3 @@
-from distutils.command.install_data import install_data
 from google.appengine.ext import db
 from models.entities.game import Game
 from models.entities.user import User
@@ -81,3 +80,10 @@ def exists_game(game=None):
 
 def get_all_user():
     return User.all()
+
+
+def get_or_insert_user(email=None, name=None, surname="", picture=None):
+    if name is None or email is None or picture is None:
+        return None
+    user = User.get_or_insert(key_name=email, email=email, name=name, surname=surname, picture=picture)
+    return user
