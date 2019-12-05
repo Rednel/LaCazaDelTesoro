@@ -1,4 +1,6 @@
 from google.appengine.ext import db
+
+from models import Treasure, Snapshot
 from models.entities.game import Game
 from models.entities.user import User
 
@@ -87,3 +89,67 @@ def get_or_insert_user(email=None, name=None, surname="", picture=None):
         return None
     user = User.get_or_insert(key_name=email, email=email, name=name, surname=surname, picture=picture)
     return user
+
+
+def create_treasure(lat=None, lon=None, text=None, game=None):
+    """
+    Create and returns a treasure if doesnt exists one in the db with the latitude and longitude provided.
+    If it exists just returns the treasure.
+    :param lat(double): lattitude
+    :param lon(double): longitude
+    :param text(string): treasure description, optional
+    :param game(Game): game owner of the treasure
+    :return: Treasure
+    """
+    if lat is not None and lon is not None:
+        return Treasure.get_or_insert(key_name=lat + '_' + lon, lat=lat, lon=lon, text=text, game=game)
+    else:
+        return None
+
+
+def remove_treasure(treasure=None):
+    """
+    Removes a treasure.
+    :param treasure(Treasure): treasure to remove
+    :raise: TransactionFailedError: if the data could not be committed.
+    """
+    db.delete(treasure)
+
+
+def update_treasure(treasure=None):
+    """
+    Updates a treasure
+    :param treasure(Treasure): treasure to update
+    """
+    Treasure.save(treasure)
+
+
+def create_snapshot(user=None, treasure=None, img=None):
+    """
+    Creates a new snapshot based in a user, treasure and image
+    :param user: User that makes the snapshot
+    :param treasure: Treasure related with the snapshot
+    :param img: Image of the snapshot
+    :return: Snapshot in case that all parameters are provided. Otherwise its returns a None
+    """
+    if user is not None and treasure is not None and img is not None:
+        return Snapshot.get_or_insert(key_name=user.email + '_' + treasure.lat + '_' + treasure.lon, user=user, treasure=treasure, img=img)
+    else:
+        return None
+
+
+def remove_snapshot(snapshot=None):
+    """
+    Removes a snapshot.
+    :param snapshot(Snapshot): snapshot to remove
+    :raise: TransactionFailedError: if the data could not be committed.
+    """
+    db.delete(snapshot)
+
+
+def update_snapshot(snapshot=None):
+    """
+    Updates a snapshot.
+    :param snapshot(Snapshot): snapshot to update
+    """
+    Snapshot.save(snapshot)

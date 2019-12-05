@@ -23,7 +23,12 @@ app.register_blueprint(google_view, url_prefix="/google")
 def home():
     return render_template('index.html')
 
+  
+@app.route("/treasure")  # creates a new treasure
+def treasures():
+    return render_template("treasures.html")
 
+  
 @app.route('/test', methods=['GET'])
 @login_required
 def test_oauth(user):
