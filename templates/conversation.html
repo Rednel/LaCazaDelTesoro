@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/conversationstyle.css') }}">
+
+    <div class="list-group">
+
+        {% for conversation in conversations %}
+        {% if conversation.color %}
+          <a href="../message" class="list-group-item list-group-item-action list-group-item-info">
+            <h4 class="list-group-item-heading">{{ conversation.user }}</h4>
+            <p class="list-group-item-text">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
+          </a>
+        {% else %}
+            <a href="../message" class="list-group-item list-group-item-action">
+                <h4 class="list-group-item-heading">{{ conversation.user }}</h4>
+                <p class="list-group-item-text">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
+            </a>
+        {% endif %}
+        {% endfor %}
+    </div>
+
+
+{% endblock %}
