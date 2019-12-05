@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, request, session
+from flask import Flask, render_template, redirect, request
 from google.appengine.ext import db
 import os
 from views.google import google_bp, login_required
@@ -8,6 +8,7 @@ from models.entities.conversation import Conversation
 from models.entities.messages import Message
 import time
 from views.google import google_view
+from views.treasure import treasure_view
 
 # Patch to fix AppEngine
 requests_toolbelt.adapters.appengine.monkeypatch()
@@ -17,6 +18,7 @@ app.secret_key = os.getenv("SECRET_KEY")
 
 app.register_blueprint(google_bp, url_prefix="/")
 app.register_blueprint(google_view, url_prefix="/google")
+app.register_blueprint(treasure_view, url_prefix="/treasures")
 
 
 @app.route('/')
@@ -24,8 +26,8 @@ def home():
     return render_template('index.html')
 
   
-@app.route("/treasure")  # creates a new treasure
-def treasures():
+@app.route("/treasures")
+def treasure():
     return render_template("treasures.html")
 
   
