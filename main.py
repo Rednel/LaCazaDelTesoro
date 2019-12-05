@@ -26,11 +26,6 @@ def home():
     return render_template('index.html')
 
   
-@app.route("/treasures")
-def treasure():
-    return render_template("treasures.html")
-
-  
 @app.route('/test', methods=['GET'])
 @login_required
 def test_oauth(user):
