@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/msgstyle.css') }}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.0/css/bootstrap.min.css" integrity="sha384-SI27wrMjH3ZZ89r4o+fGIJtnzkAnFs3E4qz9DIYioCQ5l9Rd/7UAa8DHcaL8jkWt" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+    <div class="container">
+
+        <nav class="navbar navbar-dark bg-primary d-flex flex-row inbox">
+            <div class="d-flex flex-row">
+                <div class="p-2">
+                    <img src="{{ url_for('static', filename='img1.png') }}">
+                </div>
+                <div class="p-2">
+                    <h4>{{ person }}</h4>
+                    <h6>Subtitle</h6>
+                </div>
+            </div>
+        </nav>
+
+        <div class="chat-page">
+            <div class="msg-inbox">
+                <div class="chats">
+                    <div class="msg-page example-1 scrollbar-ripe-malinka">
+
+                        {% for conversation in conversations %}
+                            {% if (conversation.senderid == id|int) %}
+                                <div class="d-flex flex-row-reverse">
+                                    <div class="p-2">
+                                        <img src="{{ url_for('static', filename='img1.png') }}" alt="">
+                                    </div>
+                                    <div class="p-2 outgoing-chats-msg">
+                                        <p>{{ conversation.message }}</p>
+                                        <span class="time">{{ conversation.time }}</span>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="d-flex flex-row">
+                                    <div class="p-2">
+                                        <img src="{{ url_for('static', filename='img1.png') }}" alt="">
+                                    </div>
+                                    <div class="p-2 received-msg">
+                                        <p>{{ conversation.message }}</p>
+                                        <span class="time">{{ conversation.time }}</span>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <nav class="navbar navbar-light inbox" style="background-color: #e3f2fd;">
+
+                <form method="POST" action="/message">
+                    <div class="input-group mb-3">
+                    <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" name="msg">
+                    <button type="button" class="btn btn-primary" value="submit"><span class="glyphicon glyphicon-send" aria-hidden="true"></span></button>
+                    </div>
+                </form>
+        </nav>
+    </div>
+
+{% endblock %}

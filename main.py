@@ -4,6 +4,9 @@ import os
 from views.google import google_bp, login_required
 import requests_toolbelt.adapters.appengine
 from models.entities.user import User
+from models.entities.conversation import Conversation
+from models.entities.messages import Message
+import time
 from views.google import google_view
 
 # Patch to fix AppEngine
@@ -122,6 +125,82 @@ def zona_edit():
 @app.route('/zona_delete')
 def zona_delete():
     return 'Hello World!'
+
+
+""" 
+CRUD Mensajes       
+"""
+
+conversation_global = []
+id_user = 3
+
+
+#  new conversation
+@app.route('/conversation', methods=['GET', 'POST'])
+def conversation_new():
+    if request.method == 'POST':
+        conversation = Conversation(
+            user=User()
+        )
+        conversation.put()
+        return redirect('')
+    else:
+        global conversation_global
+        conversation_global = []
+        conversation_global.append({'id': 1, 'user': 'Ayad', 'color': False}, )
+        conversation_global.append({'id': 2, 'user': 'Tarek', 'color': True}, )
+        conversation_global.append({'id': 1, 'user': 'Alberto', 'color': False}, )
+        conversation_global.append({'id': 2, 'user': 'Sergio', 'color': True}, )
+        return render_template('conversation.html', conversations=conversation_global)
+
+
+
+@app.route('/message', methods=['GET', 'POST'])
+def message():
+    if request.method == 'POST':
+        message = Message(
+            user=User(),
+            message=request.form.get('msg'),
+            time=time.asctime(time.localtime(time.time())),
+            conversation=Conversation()
+        )
+        message.put()
+        return redirect('')
+    else:
+        result = []
+        # pasar el usuario para empezar a enviar mensajes
+        result_send = get_person(1)
+        return render_template('message.html', conversations=result, person=result_send, id=id_user)
+
+
+def get_person(id):
+    for i in conversation_global:
+        if i['id'] is int(id):
+            return i['user']
+
+
+def get_conversations_of_the_user_id(id):
+    conversations = db.conversation
+
+    global conversation_global
+
+    user_conversation = conversations.find({
+        'members.iduser': int(id)
+    })
+    cont = 0
+    for i in user_conversation:
+        if i['members'][0]['iduser'] == int(id):
+            if cont % 2 == 0:
+                conversation_global.append({'id': i['id'], 'user': i['members'][1], 'color': False},)
+            else:
+                conversation_global.append({'id': i['id'], 'user': i['members'][1], 'color': True},)
+        else:
+            if cont % 2 == 0:
+                conversation_global.append({'id': i['id'], 'user': i['members'][0], 'color': False},)
+            else:
+                conversation_global.append({'id': i['id'], 'user': i['members'][0], 'color': True},)
+        cont += 1
+    return conversation_global
 
 
 if __name__ == '__main__':
