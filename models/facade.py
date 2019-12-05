@@ -3,6 +3,7 @@ from google.appengine.ext import db
 from models.entities.game import Game
 from models.entities.treasure import Treasure
 from models.entities.snapshot import Snapshot
+from models.entities.user import User
 
 
 def get_or_insert_game(zone=None, treasures=None, owner=None, name=None, is_active=True):
@@ -91,7 +92,8 @@ def create_treasure(lat=None, lon=None, description=None, game=None):
     :return: Treasure
     """
     if lat is not None and lon is not None:
-        return Treasure.get_or_insert(key_name=str(lat) + '_' + str(lon), lat=lat, lon=lon, description=description, game=game)
+        return Treasure.get_or_insert(key_name=str(lat) + '_' + str(lon), lat=lat, lon=lon, description=description,
+                                      game=game)
     else:
         return None
 
@@ -151,3 +153,14 @@ def update_snapshot(snapshot=None):
     :param snapshot(Snapshot): snapshot to update
     """
     Snapshot.save(snapshot)
+
+
+def get_all_user():
+    return User.all()
+
+
+def get_or_insert_user(email=None, name=None, surname="", picture=None):
+    if name is None or email is None or picture is None:
+        return None
+    user = User.get_or_insert(key_name=email, email=email, name=name, surname=surname, picture=picture)
+    return user
