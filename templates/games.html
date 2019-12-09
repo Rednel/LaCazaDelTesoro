@@ -20,85 +20,70 @@
     <link href='https://api.mapbox.com/mapbox-gl-js/v1.4.1/mapbox-gl.css' rel='stylesheet'/>
 
 
-    <title>Caza { nombre de juego }</title>
+    <title>Cazas del tesoro</title>
 </head>
 <body>
-<div class="row">
-    <div class="span6" style="float: none; margin: 0 auto;">
-        <nav class="navbar navbar-light bg-info">
-        <span class="navbar-brand mb-0 h1">
-            <h5>{Nombre del juego}</h5>
-            <p><h6>Creada por: {introducir nombre de creador}</h6></p>
-        </span>
-        </nav>
-    </div>
-</div>
-<p/>
-<div class="row">
-    <div class="col col-lg-6">
-        <div id='interactive-map' style='width: 800px; height: 800px;'></div>
-    </div>
 
+<div class="row">
     <div class="col">
-        <div class="row">
-            <div class="span6" style="float: none; margin: 0 auto;">
-                <nav class="navbar navbar-light bg-success">
-                    <h5>Tesoros</h5>
-                </nav>
-            </div>
-            <div class="container">
-                {% if treasures.count() > 0 %}
-                    <table class="table">
-                        <thead>
-                        <th>Latitud</th>
-                        <th>Longitud</th>
-                        <th>Descripci&oacute;n</th>
-                        <th>Gestionar imagen</th>
-                        </thead>
-                        <tbody>
-                        {% for treasure in treasures %}
-                            <tr>
-                                <td>{{ treasure.lat }}</td>
-                                <td>{{ treasure.lon }}</td>
-                                <td>{{ treasure.description }}</td>
-                                <td>
+        <div class="container">
+            {% if games.count > 0 %}
+                <table class="table">
+                    <thead>
+                    <th>Nombre del juego</th>
+                    <th>Creador</th>
+                    </thead>
+                    <tbody>
+                    {% for game in games %}
+                        <tr>
+                            <td>{{ game.name }}</td>
+                            <td>{{ game.owner.email }}</td>
+                            <td>
+                                {% if game.participants != None and user in game.participants %}
                                     <a class="btn btn-primary"
-                                       href="/treasures/image?treasure_id={{ treasure.key() }}">
-                                        Ver imagen
+                                       href="">
+                                        Unirse al juego
                                     </a>
-                                </td>
+                                {% else %}
+                                    <a class="btn btn-primary"
+                                       href="">
+                                        Abrir caza
+                                    </a>
+                                {% endif %}
+                            </td>
+                            {% if game.participants != None and user in game.participants %}
                                 <td>
                                     <a class="btn btn-danger"
-                                       href="/treasures/remove?latitude={{ treasure.lat }}&longitude={{ treasure.lon }}">
-                                        Eliminar tesoro defectuoso
+                                       href="">
+                                        Abandonar la caza
                                         <span style="margin-left: 5px;" class="glyphicon glyphicon-list-alt"
                                               aria-hidden="true"></span>
                                     </a>
                                 </td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                {% else %}
-                    <div class="row">
-                        <div class="col-lg-12 text-center">
-                            <div class="col-md-3"></div>
-                            <div class="col-md-6 bg-warning warning_mesagge">
-                                <label>No existen tesoros aun.</label>
-                            </div>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="row">
+                    <div class="col text-center">
+                        <div class="col bg-info warning_mesagge">
+                            <label>No existen juegos actualmente que cumplan estas características.</label>
                         </div>
                     </div>
+                </div>
 
-                {% endif %}
+            {% endif %}
 
-                <br/>
-                <a class="btn btn-primary" href="/treasures/add">
-                    Crear tesoro
-                    <span style="margin-left: 5px;" class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
-                </a>
-                <br/>
+            <p></p>
+            <p></p>
 
-            </div>
+            <a class="btn btn-primary align-right"
+               href="/games/add">
+                Crear juego
+            </a>
+
         </div>
     </div>
 
@@ -118,4 +103,3 @@
 </div>
 </body>
 </html>
-
