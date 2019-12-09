@@ -1,5 +1,6 @@
 from google.appengine.ext import db
 from json import JSONEncoder
+from models.entities.treasure import Treasure
 
 
 class User(db.Model, JSONEncoder):
