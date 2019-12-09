@@ -6,6 +6,57 @@ from models.entities.snapshot import Snapshot
 from models.entities.user import User
 
 
+def not_participating_game(element, elements):
+    return element not in elements
+
+
+def get_games_not_joined_by_user(user=None):
+    """
+
+    :return: all games in the database that are actives and the user hasn't joined yet
+    """
+    if user is not None:
+        return Game.all()
+    return list()
+
+
+def get_active_games_by_user(user=None):
+    """
+
+    :return: all games in the database that are associated to the user and are not completed yet
+    """
+    if user is not None:
+        return filter(Game.is_active, user.participating_games)
+    return list()
+
+
+def get_completed_games_by_user(user=None):
+    """
+
+    :return: all games in the database that are associated to the user and are already completed
+    """
+    if user is not None:
+        return filter(not Game.is_active, user.participating_games)
+    return list()
+
+
+def owning_game(element, user):
+    print(element.owner.key())
+    print(element.name)
+    print(user.key())
+    return element.owner.key() == user.key()
+
+
+def get_created_games_by_user(user=None):
+    """
+
+    :return: all games in the database that were created by the provided user
+    """
+    if user is not None:
+        return filter(lambda x: owning_game(element=x, user=user), Game.all())
+    return list()
+
+
 def get_or_insert_game(zone=None, treasures=None, owner=None, name=None, is_active=True):
     """Get or insert the game with the information provided
 
@@ -28,7 +79,7 @@ def get_or_insert_game(zone=None, treasures=None, owner=None, name=None, is_acti
     if name is None or owner is None or owner.email is None:
         return None
     game = Game.get_or_insert(key_name=owner.email + "_" + name, is_active=is_active, name=name, zone=zone,
-                              treasures=treasures, owner=owner, participants=[], winner=None)
+                              treasures=treasures, owner=owner, participants=None, winner=None)
     return game
 
 
@@ -98,7 +149,7 @@ def create_treasure(lat=None, lon=None, description=None, game=None):
         return None
 
 
-def get_treasures():
+def get_all_treasures():
     """
 
     :return: all treasures in the database
@@ -123,6 +174,25 @@ def update_treasure(treasure=None):
     Treasure.save(treasure)
 
 
+def get_treasure_by_id(treasure_id=None):
+    """
+    Gets treasure related with provided id
+    :param treasure_id(String): id of the treasure to get
+    :return treasure(Treasure)
+    """
+    return Treasure.get(treasure_id)
+
+
+def update_treasure_image(user=None, treasure_id=None, img=None):
+    """
+    Gets treasure related with provided id
+    :param treasure_id(String): id of the treasure to get
+    :return treasure(Treasure)
+    """
+    treasure = get_treasure_by_id(treasure_id)
+    create_snapshot(user, treasure, img)
+
+
 def create_snapshot(user=None, treasure=None, img=None):
     """
     Creates a new snapshot based in a user, treasure and image
@@ -132,8 +202,8 @@ def create_snapshot(user=None, treasure=None, img=None):
     :return: Snapshot in case that all parameters are provided. Otherwise its returns a None
     """
     if user is not None and treasure is not None and img is not None:
-        return Snapshot.get_or_insert(key_name=user.email + '_' + treasure.lat + '_' + treasure.lon, user=user,
-                                      treasure=treasure, img=img)
+        return Snapshot.get_or_insert(key_name=user.email + '_' + str(treasure.key()), user=user,
+                                      treasure=treasure, img=str(img))
     else:
         return None
 
