@@ -6,8 +6,18 @@ from models.entities.snapshot import Snapshot
 from models.entities.user import User
 
 
-def not_participating_game(element, elements):
-    return element not in elements
+def owning_game(element, user):
+    return element.owner.key() == user.key()
+
+
+def get_created_games_by_user(user=None):
+    """
+
+    :return: all games in the database that were created by the provided user
+    """
+    if user is not None:
+        return filter(lambda x: owning_game(element=x, user=user), Game.all())
+    return list()
 
 
 def get_games_not_joined_by_user(user=None):
@@ -16,7 +26,7 @@ def get_games_not_joined_by_user(user=None):
     :return: all games in the database that are actives and the user hasn't joined yet
     """
     if user is not None:
-        return Game.all()
+        return filter(lambda x: not owning_game(element=x, user=user), Game.all())
     return list()
 
 
@@ -37,23 +47,6 @@ def get_completed_games_by_user(user=None):
     """
     if user is not None:
         return filter(not Game.is_active, user.participating_games)
-    return list()
-
-
-def owning_game(element, user):
-    print(element.owner.key())
-    print(element.name)
-    print(user.key())
-    return element.owner.key() == user.key()
-
-
-def get_created_games_by_user(user=None):
-    """
-
-    :return: all games in the database that were created by the provided user
-    """
-    if user is not None:
-        return filter(lambda x: owning_game(element=x, user=user), Game.all())
     return list()
 
 
@@ -83,14 +76,17 @@ def get_or_insert_game(zone=None, treasures=None, owner=None, name=None, is_acti
     return game
 
 
-def delete_game(game=None):
+def delete_game(game_id=None, user=None):
     """Delete the game from db
 
         Args:
             :param game: The game which is going to be deleted from db
                 :type: Game
     """
-    db.delete(game)
+    if user is not None and game_id is not None:
+        game = Game.get(game_id)
+        if game.owner.key() == user.key():
+            db.delete(game)
 
 
 def get_game_by_owner_and_name(owner=None, game_name=None):
@@ -157,7 +153,7 @@ def get_all_treasures():
     return Treasure.all()
 
 
-def remove_treasure(treasure=None):
+def delete_treasure(treasure=None):
     """
     Removes a treasure.
     :param treasure: treasure to remove
@@ -208,7 +204,7 @@ def create_snapshot(user=None, treasure=None, img=None):
         return None
 
 
-def remove_snapshot(snapshot=None):
+def delete_snapshot(snapshot=None):
     """
     Removes a snapshot.
     :param snapshot(Snapshot): snapshot to remove
