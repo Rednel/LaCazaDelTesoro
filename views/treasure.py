@@ -33,7 +33,7 @@ def delete_treasures_function():
     latitude = float(request.args.get('latitude'))
     longitude = float(request.args.get('longitude'))
     treasure = models.facade.create_treasure(latitude, longitude)
-    models.facade.remove_treasure(treasure)
+    models.facade.delete_treasure(treasure)
     return show_treasures_get()
 
 
