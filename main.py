@@ -6,8 +6,10 @@ import requests_toolbelt.adapters.appengine
 from models.entities.user import User
 from models.entities.conversation import Conversation
 from models.entities.messages import Message
+
 import time
 from views.google import google_view
+from models.facade import *
 
 # Patch to fix AppEngine
 requests_toolbelt.adapters.appengine.monkeypatch()
@@ -21,14 +23,15 @@ app.register_blueprint(google_view, url_prefix="/google")
 
 @app.route('/')
 def home():
+
     return render_template('index.html')
 
-  
+
 @app.route("/treasure")  # creates a new treasure
 def treasures():
     return render_template("treasures.html")
 
-  
+
 @app.route('/test', methods=['GET'])
 @login_required
 def test_oauth(user):
@@ -36,100 +39,138 @@ def test_oauth(user):
 
 
 """ 
-CRUD User routes       
+User routes       
 """
 
 
 # user list
 @app.route('/user_all')
 def user_all():
-    data = User.all()
-    return render_template('user_all.html', data=data)
+    data = get_all_user()
+    return render_template('user/user_all.html', data=data)
 
 
 #  get user info
 @app.route('/user_one/<id>')
 def user_one(id):
     user_id = int(id)
-    user = db.get(db.Key.from_path('User', user_id))
-    return render_template('user_one.html', user=user)
+    user = get_user_one(user_id)
+    return render_template('user/user_one.html', user=user)
 
 
 #  new user
 @app.route('/user_new', methods=['GET', 'POST'])
 def user_new():
     if request.method == 'POST':
-        user = User(
-            user_name=request.form.get('username'),
-            email=request.form.get('email'),
-            first_name=request.form.get('firstname'),
-            last_name=request.form.get('lastname'),
-            gender=request.form.get('gender'),
-            role='user'  # por defecto
-        )
-        user.put()
-        return redirect('/user_all')
+        email = request.form.get('email'),
+        name = request.form.get('name'),
+        surname = request.form.get('surname'),
+        picture = request.form.get('picture')
+        insert_user_new(email, name, surname, picture)
+        return redirect('user_all')
     else:
-        return render_template('user_new.html')
+        return render_template('user/user_new.html')
+
 
 
 #  update user info
 @app.route('/user_edit/<id>', methods=['GET', 'POST'])
 def user_edit(id):
     if request.method == 'POST':
+        name = request.form.get('name')
+        email = request.form.get('email')
+        surname = request.form.get('surname')
+        picture = request.form.get('pricture')
         user_id = int(id)
-        user = db.get(db.Key.from_path('User', user_id))
-        user.user_name = str(request.form.get('username'))
-        user.email = str(request.form.get('email'))
-        user.first_name = 'Tarek'
-        user.last_name = 'Khalfaoui'
-        user.gender = 'male'
-        user.role = 'user'
-        user.put()
+        user_update_model(id, name, email, surname, picture)
         return redirect('/user_all')
-
     else:
         user_id = int(id)
         user = db.get(db.Key.from_path('User', user_id))
-        return render_template('user_edit.html', user=user)
+        return render_template('user/user_edit.html', user=user)
 
 
 #  delete user
 @app.route('/user_delete/<id>')
 def user_delete(id):
-    user_id = int(id)
-    user = db.get(db.Key.from_path('User', user_id))
-    db.delete(user)
-    return redirect('/user_all')
-
+    if id:
+        user_id = int(id)
+        user_delete_model(user_id)
+        return redirect('/user_all')
 
 """ 
-CRUD Zona routes       
+Routes Zona        
 """
 
 
-# zona list
-@app.route('/zona_all')
-def zona_all():
-    return 'Hello World!'
+# zone list
+@app.route('/zone_all')
+def zone_all():
+    data = get_zone_all()
+    return render_template('zone/zone_all.html', data=data)
 
 
-#  get zona info
-@app.route('/zona_one')
-def zona_one():
-    return 'Hello World!'
+#  get zone info
+@app.route('/zone_one/<id>')
+def zone_one(id):
+    zone_id = int(id)
+    zone = zone_one_model(zone_id)
+    return render_template('zone/zone_one.html', zone=zone)
 
 
-#  update zona info
-@app.route('/zona_edit')
-def zona_edit():
-    return 'Hello World!'
+#  new zone
+@app.route('/zone_new', methods=['GET', 'POST'])
+def zone_new():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        latitude = request.form.get('latitude')
+        longitude = request.form.get('longitude')
+        height = request.form.get('height')
+        width = request.form.get('width')
+        insert_zone_new(name, latitude, longitude, height, width)
+        return redirect('zone_all')
+    else:
+        return render_template('zone/zone_new.html')
+    zone_new()
 
 
-#  delete zona
-@app.route('/zona_delete')
-def zona_delete():
-    return 'Hello World!'
+#  update zone info
+@app.route('/zone_edit/<id>', methods=['GET', 'POST'])
+def zone_edit(id):
+        if request.method == 'POST':
+            name = request.form.get('name')
+            latitude = request.form.get('latitude')
+            longitude = request.form.get('longitude')
+            height = request.form.get('height')
+            width = request.form.get('width')
+            zone_id = int(id)
+            zone_edit_model(id, name, latitude, longitude, height, width)
+            return redirect('/zone_all')
+        else:
+            zone_id = int(id)
+            zone = db.get(db.Key.from_path('Zone', zone_id))
+            return render_template('zone/zone_edit.html', zone=zone)
+
+
+#  delete zone
+@app.route('/zone_delete/<id>')
+def zone_delete(id):
+    if id:
+        zone_id = int(id)
+        zone_delete_model(zone_id)
+        return redirect('/zone_all')
+
+""" 
+SEARCH FOR GAME       
+"""
+@app.route('/game_search',methods=['POST'])
+def game_search():
+    keyword = request.form.get('keyword')
+    if keyword:
+        keyword = str(keyword)
+        q = Game.all()
+        result = q.filter("game_name =", keyword)
+        return render_template('game_search.html', data=result)
 
 
 """ 
@@ -157,7 +198,6 @@ def conversation_new():
         conversation_global.append({'id': 1, 'user': 'Alberto', 'color': False}, )
         conversation_global.append({'id': 2, 'user': 'Sergio', 'color': True}, )
         return render_template('conversation.html', conversations=conversation_global)
-
 
 
 @app.route('/message', methods=['GET', 'POST'])
@@ -196,14 +236,14 @@ def get_conversations_of_the_user_id(id):
     for i in user_conversation:
         if i['members'][0]['iduser'] == int(id):
             if cont % 2 == 0:
-                conversation_global.append({'id': i['id'], 'user': i['members'][1], 'color': False},)
+                conversation_global.append({'id': i['id'], 'user': i['members'][1], 'color': False}, )
             else:
-                conversation_global.append({'id': i['id'], 'user': i['members'][1], 'color': True},)
+                conversation_global.append({'id': i['id'], 'user': i['members'][1], 'color': True}, )
         else:
             if cont % 2 == 0:
-                conversation_global.append({'id': i['id'], 'user': i['members'][0], 'color': False},)
+                conversation_global.append({'id': i['id'], 'user': i['members'][0], 'color': False}, )
             else:
-                conversation_global.append({'id': i['id'], 'user': i['members'][0], 'color': True},)
+                conversation_global.append({'id': i['id'], 'user': i['members'][0], 'color': True}, )
         cont += 1
     return conversation_global
 

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-12 text-center">
+        <h1>Nueva zona<span class="glyphicon glyphicon-globe" aria-hidden="true"></span></h1>
+    </div>
+</div>
+<br/>
+<br/>
+<div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+        <form class="form-horizontal" role="form" action="" method="post">
+            <div class="form-group">
+                <label for="inputAuthor" class="col-sm-3 control-label">Name</label>
+                <div class="col-sm-6">
+                    <input type="name" class="form-control" name="name" id="name"
+                           placeholder="name">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputPriority" class="col-sm-3 control-label">Latitude</label>
+
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" name="latitude" id="latitude"
+                           placeholder="latitude">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputPriority" class="col-sm-3 control-label">Longitude</label>
+
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" name="longitude" id="longitude"
+                           placeholder="longitude">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputPriority" class="col-sm-3 control-label">Height</label>
+
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" name="height" id="height"
+                           placeholder="height">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputPriority" class="col-sm-3 control-label">Width</label>
+
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" name="width" id="width"
+                           placeholder="width">
+                </div>
+            </div>
+
+
+            <div class="form-group text-center">
+                <button type="submit" value="submit" class="btn btn-success">Crear</button>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-2"></div>
+</div>
+
+{% endblock content %}
