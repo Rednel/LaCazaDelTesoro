@@ -106,7 +106,7 @@ function createMarkerElement(id, coordinates, name) {
   var marker = document.createElement('div');
   marker.setAttribute('id', marker_id);
   marker.className = 'marker';
-  marker.style.backgroundImage = 'url("../img/land_marker.svg")';
+  marker.style.backgroundImage = 'url("../static/img/marker.svg")';
   marker.style.width = '40px';
   marker.style.height = '40px';
 
@@ -258,7 +258,7 @@ function createInteractiveMap(id) {
   var geocoder = new MapboxGeocoder({
     accessToken: mapboxgl.accessToken,
     marker: {
-      image: "../img/land_marker.svg",
+      image: "../static/img/marker.svg",
       color: "orange"
     },
     mapboxgl: mapboxgl

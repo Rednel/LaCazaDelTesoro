@@ -39,17 +39,24 @@
                             <td>{{ game.name }}</td>
                             <td>{{ game.owner.email }}</td>
                             <td>
-                                {% if user not in game.participants %}
+                                {% if game.participants == None and game.owner.key() == user.key() %}
                                     <a class="btn btn-primary"
-                                       href="">
-                                        Unirse al juego
+                                       href="/games/treasures?game_id={{ game.key() }}">
+                                        Editar caza
+                                    </a>
+                                {% elif game.participants == None or user not in game.participants %}
+                                    <a class="btn btn-primary"
+                                       href="/games/treasures?game_id={{ game.key() }}">
+                                        <!--href="/games/join?game_id={{ game.key() }}-->
+                                        Unirse a la caza
                                     </a>
                                 {% else %}
                                     <a class="btn btn-primary"
-                                       href="">
+                                       href="/games/treasures?game_id={{ game.key() }}">
                                         Abrir caza
                                     </a>
                                 {% endif %}
+
                             </td>
                             {% if game.participants != None and user in game.participants %}
                                 <td>
@@ -63,7 +70,7 @@
                             {% elif game.owner.key() == user.key() %}
                                 <td>
                                     <a class="btn btn-danger"
-                                       href="/games/remove?game_id={{game.key()}}">
+                                       href="/games/remove?game_id={{ game.key() }}">
                                         Eliminar la caza
                                         <span style="margin-left: 5px;" class="glyphicon glyphicon-list-alt"
                                               aria-hidden="true"></span>

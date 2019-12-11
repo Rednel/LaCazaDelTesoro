@@ -32,7 +32,20 @@ def render_games_form_post(user):
 @login_required
 def show_created_games(user):
     games = models.facade.get_created_games_by_user(user)
-    print(len(games))
+    return render_template('games.html', games=games, user=user)
+
+
+@game_view.route("/completed", methods=['GET'])
+@login_required
+def show_completed_games(user):
+    games = models.facade.get_completed_games_by_user(user)
+    return render_template('games.html', games=games, user=user)
+
+
+@game_view.route("/active", methods=['GET'])
+@login_required
+def show_active_games(user):
+    games = models.facade.get_active_games_by_user(user)
     return render_template('games.html', games=games, user=user)
 
 
@@ -42,3 +55,11 @@ def delete_treasures_function(user):
     game_id = request.args.get('game_id')
     models.facade.delete_game(game_id, user)
     return redirect(url_for("game_views.show_created_games"))
+
+
+@game_view.route('/join', methods=['GET'])
+@login_required
+def join_game(user):
+    game_id = request.args.get('game_id')
+    models.facade.join_game(game_id, user)
+    return redirect(url_for("game_views.show_active_games"))

@@ -17,18 +17,19 @@
           type='text/css'/>
     <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.9/mapbox-gl-draw.css'
           type='text/css'/>
+    <script src='../static/js/map.js'></script>
     <link href='https://api.mapbox.com/mapbox-gl-js/v1.4.1/mapbox-gl.css' rel='stylesheet'/>
 
 
-    <title>Caza { nombre de juego }</title>
+    <title>Caza {{ game.name }}</title>
 </head>
 <body>
 <div class="row">
     <div class="span6" style="float: none; margin: 0 auto;">
         <nav class="navbar navbar-light bg-info">
         <span class="navbar-brand mb-0 h1">
-            <h5>{Nombre del juego}</h5>
-            <p><h6>Creada por: {introducir nombre de creador}</h6></p>
+            <h5>{{ game.name }}</h5>
+            <p><h6>Creada por: {{ game.owner.email }}</h6></p>
         </span>
         </nav>
     </div>
@@ -47,7 +48,7 @@
                 </nav>
             </div>
             <div class="container">
-                {% if treasures.count() > 0 %}
+                {% if treasures %}
                     <table class="table">
                         <thead>
                         <th>Latitud</th>
@@ -68,12 +69,14 @@
                                     </a>
                                 </td>
                                 <td>
-                                    <a class="btn btn-danger"
-                                       href="/treasures/remove?latitude={{ treasure.lat }}&longitude={{ treasure.lon }}">
-                                        Eliminar tesoro defectuoso
-                                        <span style="margin-left: 5px;" class="glyphicon glyphicon-list-alt"
-                                              aria-hidden="true"></span>
-                                    </a>
+                                    {% if user.key() == treasure.game.owner.key() %}
+                                        <a class="btn btn-danger"
+                                           href="/games/treasures/remove?game_id={{ game.key() }}&treasure_id={{ treasure.key() }}">
+                                            Eliminar tesoro defectuoso
+                                            <span style="margin-left: 5px;" class="glyphicon glyphicon-list-alt"
+                                                  aria-hidden="true"></span>
+                                        </a>
+                                    {% endif %}
                                 </td>
                             </tr>
                         {% endfor %}
@@ -91,13 +94,14 @@
 
                 {% endif %}
 
-                <br/>
-                <a class="btn btn-primary" href="/treasures/add">
-                    Crear tesoro
-                    <span style="margin-left: 5px;" class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
-                </a>
-                <br/>
-
+                {% if user.key() == game.owner.key() %}
+                    <br/>
+                    <a class="btn btn-primary" href="/games/treasures/add?game_id={{ game.key() }}">
+                        Crear tesoro
+                        <span style="margin-left: 5px;" class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
+                    </a>
+                    <br/>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -114,7 +118,9 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
             integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
             crossorigin="anonymous"></script>
-    <!-- <script createInteractiveMap("interactive-map")></script>-->
+    <script>
+        createInteractiveMap("interactive-map");
+    </script>
 </div>
 </body>
 </html>
