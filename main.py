@@ -22,7 +22,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 app.register_blueprint(google_bp, url_prefix="/")
 app.register_blueprint(google_view, url_prefix="/google")
-app.register_blueprint(treasure_view, url_prefix="/treasures")
+app.register_blueprint(treasure_view, url_prefix="/games/treasures")
 app.register_blueprint(game_view, url_prefix="/games")
 
 

@@ -50,6 +50,16 @@ def get_completed_games_by_user(user=None):
     return list()
 
 
+def get_game_by_id(game_id=None):
+    """
+
+    :return: Game by id
+    """
+    if game_id is not None:
+        return Game.get(game_id)
+    return list()
+
+
 def get_or_insert_game(zone=None, treasures=None, owner=None, name=None, is_active=True):
     """Get or insert the game with the information provided
 
@@ -80,13 +90,28 @@ def delete_game(game_id=None, user=None):
     """Delete the game from db
 
         Args:
-            :param game: The game which is going to be deleted from db
+            :param game_id: The game id which is going to be deleted from db
                 :type: Game
     """
     if user is not None and game_id is not None:
         game = Game.get(game_id)
         if game.owner.key() == user.key():
             db.delete(game)
+
+
+def join_game(game_id=None, user=None):
+    """appends user to participants of a game
+
+        Args:
+            :param game_id: The game id which user is going to be joined
+                :type: Game
+    """
+    if user is not None and game_id is not None:
+        game = Game.get(game_id)
+        if game.participants is None:
+            game.participants = [user]
+        else:
+            game.participants.append(user)
 
 
 def get_game_by_owner_and_name(owner=None, game_name=None):
@@ -102,19 +127,6 @@ def get_game_by_owner_and_name(owner=None, game_name=None):
     return Game.get_by_key_name(key_names=owner.email + "_" + game_name)
 
 
-def get_game_by_id(_id=None):
-    """Get the game from db with the id provided
-        Args:
-            :param _id: The id of the game to search in db
-                :type: Game
-        Returns:
-            Game: The game if it is already stored, None in other case
-    """
-    if _id is None:
-        return None
-    return Game.get_by_id(ids=_id)
-
-
 def exists_game(game=None):
     """Get a boolean value corresponding with the evidence of an existing game provided in db
         Args:
@@ -128,38 +140,42 @@ def exists_game(game=None):
     return Game.get_by_key_name(key_names=game.owner.email + "_" + game.name) is not None
 
 
-def create_treasure(lat=None, lon=None, description=None, game=None):
+def create_treasure(game=None, user=None, lat=None, lon=None, description=None):
     """
     Create and returns a treasure if doesnt exists one in the db with the latitude and longitude provided.
     If it exists just returns the treasure.
-    :param lat(double): lattitude
+    :param lat(double): latitude
     :param lon(double): longitude
     :param description(string): treasure description, optional
     :param game(Game): game owner of the treasure
     :return: Treasure
     """
-    if lat is not None and lon is not None:
+    if lat is not None and lon is not None and user is not None and user.key() == game.owner.key():
         return Treasure.get_or_insert(key_name=str(lat) + '_' + str(lon), lat=lat, lon=lon, description=description,
                                       game=game)
     else:
         return None
 
 
-def get_all_treasures():
+def get_all_treasures_by_game(game=None):
     """
-
+    :param game(Game): game owner of the treasures
     :return: all treasures in the database
     """
-    return Treasure.all()
+    if game is not None:
+        return game.treasures
+    return list()
 
 
-def delete_treasure(treasure=None):
+def delete_treasure(user=None, treasure=None):
     """
     Removes a treasure.
     :param treasure: treasure to remove
     :raise: TransactionFailedError: if the data could not be committed.
     """
-    db.delete(treasure)
+    print(user.key() == treasure.game.owner.key())
+    if user is not None and treasure is not None and user.key() == treasure.game.owner.key():
+        db.delete(treasure)
 
 
 def update_treasure(treasure=None):
