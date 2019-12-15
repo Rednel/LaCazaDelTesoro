@@ -11,7 +11,13 @@ def show_treasures_get(user):
     game_id = request.args.get('game_id')
     game = models.facade.get_game_by_id(game_id=game_id)
     treasures = models.facade.get_all_treasures_by_game(game=game)
-    return render_template('treasures.html', game=game, user=user, treasures=treasures)
+    participant_images_tuples = list()
+    for participant in game.participants:
+        number_of_images = len(filter(lambda image: image.treasure in game.treasures, participant.user.images))
+        participant_images_tuples.append((participant.user, number_of_images))
+
+    return render_template('treasures.html', game=game, user=user, treasures=treasures,
+                           participant_images_tuples=participant_images_tuples)
 
 
 @treasure_view.route('/add', methods=['GET'])
@@ -62,14 +68,14 @@ def render_treasure_image_view(user):
 def send_treasure_image(user):
     treasure_id = request.args.get('treasure_id')
     game_id = request.args.get('game_id')
-    image_path = request.form.get('image')
+    image_path = request.files.get('image')
     if image_path != "":
-        print(image_path)
-        models.facade.update_treasure_image(user=user, treasure_id=treasure_id, img=image_path)
+        file_data = image_path.read()
+        treasure = models.facade.get_treasure_by_id(treasure_id)
+        models.facade.create_snapshot(user=user, treasure=treasure, img=file_data)
         return redirect(url_for("treasure_views.show_treasures_get", game_id=game_id))
     else:
         return redirect(url_for("treasure_views.render_treasure_image_view", game_id=game_id, treasure_id=treasure_id))
-
 
 
 @treasure_view.route('/image/delete', methods=['GET'])
