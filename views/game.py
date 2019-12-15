@@ -69,5 +69,25 @@ def join_game(user):
 @login_required
 def unjoin_game(user):
     game_id = request.args.get('game_id')
-    models.facade.unjoin_game(game_id, user)
+    models.facade.unjoin_game(game_id=game_id, user=user)
     return redirect(url_for("game_views.show_active_games"))
+
+
+@game_view.route('/win', methods=['GET'])
+@login_required
+def win_game(owner):
+    game_id = request.args.get('game_id')
+    winner_id = request.args.get('winner_id')
+    game = models.facade.get_game_by_id(game_id=game_id)
+    winner = models.facade.get_user_by_user_id(user_id=winner_id)
+    models.facade.win_game(game=game, winner=winner, owner=owner)
+    return render_template('winner.html', game=game, user=owner)
+
+
+@game_view.route('/reopen', methods=['GET'])
+@login_required
+def reopen_game(user):
+    game_id = request.args.get('game_id')
+    game = models.facade.get_game_by_id(game_id=game_id)
+    models.facade.reopen_game(game=game, user=user)
+    return redirect(url_for("game_views.show_created_games"))

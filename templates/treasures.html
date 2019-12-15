@@ -102,11 +102,51 @@
                         <span style="margin-left: 5px;" class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
                     </a>
                     <br/>
+                    <br/>
+                    <h2>Participantes actuales</h2>
+                    <table class="table">
+                        <thead>
+                        <th>Nombre participante</th>
+                        <th>Número de tesoros encontrados</th>
+                        </thead>
+                        <tbody>
+                        {% for participant in game.participants %}
+                            <input type="hidden" id="participant-images" name="participant"
+                                   value={{ participant.user.images }}>
+                            <tr>
+                                <td>{{ participant.user.email }}</td>
+                                <td id="tableRow">{{ participant.user.images.count() }}
+                                    <script>
+                                        /*
+                                        var row = document.getElementById("tableRow");
+                                        var participant = document.getElementById("participant-images");
+                                        //let numberOfSnapshots = participant.images.filter(image => image.treasure in game.treasures).count();
+                                        console.log(participant.value);
+                                        row.innerHTML = participant.value;*/
+                                    </script>
+                                </td>
+                                {% if participant.user.images.count() == treasures.count() and game.is_active %}
+                                    <td>
+                                        <a class="btn btn-primary"
+                                           href="/games/win?game_id={{ game.key() }}&winner_id={{ participant.user.key() }}">
+                                            Declarar ganador
+                                        </a>
+                                    </td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    {% if not game.is_active %}
+                        <a class="btn btn-primary align-right"
+                           href="/games/reopen?game_id={{ game.key() }}">
+                            Reabrir juego
+                        </a>
+                    {% endif %}
                 {% endif %}
             </div>
         </div>
     </div>
-
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
