@@ -110,25 +110,14 @@
                         <th>Número de tesoros encontrados</th>
                         </thead>
                         <tbody>
-                        {% for participant in game.participants %}
-                            <input type="hidden" id="participant-images" name="participant"
-                                   value={{ participant.user.images }}>
+                        {% for (x,y) in participant_images_tuples %}
                             <tr>
-                                <td>{{ participant.user.email }}</td>
-                                <td id="tableRow">{{ participant.user.images.count() }}
-                                    <script>
-                                        /*
-                                        var row = document.getElementById("tableRow");
-                                        var participant = document.getElementById("participant-images");
-                                        //let numberOfSnapshots = participant.images.filter(image => image.treasure in game.treasures).count();
-                                        console.log(participant.value);
-                                        row.innerHTML = participant.value;*/
-                                    </script>
-                                </td>
-                                {% if participant.user.images.count() == treasures.count() and game.is_active %}
+                                <td>{{ x.email }}</td>
+                                <td>{{ y }}</td>
+                                {% if y == treasures.count() and game.is_active %}
                                     <td>
                                         <a class="btn btn-primary"
-                                           href="/games/win?game_id={{ game.key() }}&winner_id={{ participant.user.key() }}">
+                                           href="/games/win?game_id={{ game.key() }}&winner_id={{ x.key() }}">
                                             Declarar ganador
                                         </a>
                                     </td>

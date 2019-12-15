@@ -254,16 +254,6 @@ def get_treasure_by_id(treasure_id=None):
     return Treasure.get(treasure_id)
 
 
-def update_treasure_image(user=None, treasure_id=None, img=None):
-    """
-    Gets treasure related with provided id
-    :param treasure_id(String): id of the treasure to get
-    :return treasure(Treasure)
-    """
-    treasure = get_treasure_by_id(treasure_id)
-    create_snapshot(user, treasure, img)
-
-
 def create_snapshot(user=None, treasure=None, img=None):
     """
     Creates a new snapshot based in a user, treasure and image
@@ -273,10 +263,11 @@ def create_snapshot(user=None, treasure=None, img=None):
     :return: Snapshot in case that all parameters are provided. Otherwise its returns a None
     """
     if user is not None and treasure is not None and img is not None:
+        image = db.Blob(img)
         if get_snapshot_by_user_treasure(user=user, treasure=treasure) is not None:
             delete_snapshot(user=user, treasure=treasure)
         return Snapshot.get_or_insert(key_name=user.email + '_' + str(treasure.key()), user=user,
-                                      treasure=treasure, img=str(img))
+                                      treasure=treasure, img=image)
     else:
         return None
 

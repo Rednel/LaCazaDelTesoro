@@ -7,3 +7,6 @@ class Treasure(db.Model):
     lon = db.FloatProperty(required=True)
     description = db.StringProperty(default="")
     game = db.ReferenceProperty(Game, collection_name="treasures")
+
+    def __eq__(self, other):
+        return isinstance(other, Treasure) and other.key() == self.key()
