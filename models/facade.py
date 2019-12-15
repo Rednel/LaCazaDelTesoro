@@ -134,6 +134,9 @@ def unjoin_game(game_id=None, user=None):
     """
 
     if user is not None and game_id is not None:
+        game = get_game_by_id(game_id)
+        for treasure in game.treasures:
+            delete_snapshot(user=user, treasure=treasure)
         participant = Participant.get_or_insert(key_name=user.email + "_" + game_id)
         db.delete(participant)
 
@@ -237,7 +240,7 @@ def create_snapshot(user=None, treasure=None, img=None):
     :return: Snapshot in case that all parameters are provided. Otherwise its returns a None
     """
     if user is not None and treasure is not None and img is not None:
-        if get_snapshot_by_user_treasure is not None:
+        if get_snapshot_by_user_treasure(user=user, treasure=treasure) is not None:
             delete_snapshot(user=user, treasure=treasure)
         return Snapshot.get_or_insert(key_name=user.email + '_' + str(treasure.key()), user=user,
                                       treasure=treasure, img=str(img))
