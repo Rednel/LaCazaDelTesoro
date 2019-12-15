@@ -129,7 +129,7 @@ def join_game(game_id=None, user=None):
 def unjoin_game(game_id=None, user=None):
     """
 
-    :param game_id: idof the game that user joins
+    :param game_id: id of the game that user joins
     :param user: user what joins the game
     """
 
@@ -139,6 +139,39 @@ def unjoin_game(game_id=None, user=None):
             delete_snapshot(user=user, treasure=treasure)
         participant = Participant.get_or_insert(key_name=user.email + "_" + game_id)
         db.delete(participant)
+
+
+def win_game(game=None, winner=None, owner=None):
+    """
+    Makes winner user win the game
+    :param game: game that winner won
+    :param winner: winner of the game
+    :param owner: owner of the game
+    """
+    print(game is not None)
+    print(winner is not None)
+    print(owner is not None)
+    print(game.owner.key() == owner.key())
+    if game is not None and winner is not None and owner is not None and game.owner.key() == owner.key():
+        game.winner = winner
+        game.is_active = False
+        Game.save(game)
+
+
+def reopen_game(game=None, user=None):
+    """
+    Removes game winner and reopens the game
+    :param game_id: id of the game to reopen
+    :param user: user that reopens the game, must be the owner of the game
+    """
+
+    if game is not None and user is not None and game.owner.key() == user.key():
+        game.winner = None
+        game.is_active = True
+        for treasure in game.treasures:
+            for image in treasure.images:
+                Snapshot.delete(image)
+        Game.save(game)
 
 
 def get_game_by_owner_and_name(owner=None, game_name=None):
@@ -286,6 +319,17 @@ def get_snapshot_by_user_treasure(user=None, treasure=None):
             if snapshot.treasure.key() == treasure.key() and snapshot.user.key() == user.key():
                 return snapshot
     return None
+
+
+def get_user_by_user_id(user_id=None):
+    """
+    Returns a user based in a user_id
+    :param user_id: Id of the user to return
+    :return: User in case that all parameters are provided. Otherwise its returns a None
+    """
+    if user_id is not None:
+        return User.get(user_id)
+    return list()
 
 
 def get_all_user():
