@@ -9,4 +9,6 @@ class Game(db.Model):
     winner = db.ReferenceProperty(User, collection_name="won_games")
     zone = db.ReferenceProperty(Zone, collection_name="game")
     owner = db.ReferenceProperty(User, collection_name="created_games", required=True)
-    participants = db.ReferenceProperty(User, collection_name="participating_games")
+
+    def __eq__(self, other):
+        return isinstance(other, Game) and other.key() == self.key()
