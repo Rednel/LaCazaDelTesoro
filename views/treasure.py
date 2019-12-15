@@ -42,25 +42,44 @@ def delete_treasures_function(user):
     game_id = request.args.get('game_id')
     treasure_id = request.args.get('treasure_id')
     treasure = models.facade.get_treasure_by_id(treasure_id)
-    models.facade.delete_treasure(treasure=treasure,user=user)
+    models.facade.delete_treasure(treasure=treasure, user=user)
     return redirect(url_for("treasure_views.show_treasures_get", game_id=game_id))
 
 
 @treasure_view.route('/image', methods=['GET'])
-def render_treasure_image_view():
+@login_required
+def render_treasure_image_view(user):
     treasure_id = request.args.get('treasure_id')
+    game_id = request.args.get('game_id')
     treasure = models.facade.get_treasure_by_id(treasure_id)
-    print(treasure.images)
-    return render_template('treasure_view.html', treasure=treasure)
+    game = models.facade.get_game_by_id(game_id)
+    image_base64 = models.facade.get_snapshot_by_user_treasure_in_base_64(user=user, treasure=treasure)
+    return render_template('treasure_image.html', treasure=treasure, game=game, image_base64=image_base64)
 
 
 @treasure_view.route('/image', methods=['POST'])
 @login_required
 def send_treasure_image(user):
     treasure_id = request.args.get('treasure_id')
-    image = request.args.get('image')
-    models.facade.update_treasure_image(user=user, treasure_id=treasure_id, img=image)
-    return show_treasures_get()
+    game_id = request.args.get('game_id')
+    image_path = request.form.get('image')
+    if image_path != "":
+        print(image_path)
+        models.facade.update_treasure_image(user=user, treasure_id=treasure_id, img=image_path)
+        return redirect(url_for("treasure_views.show_treasures_get", game_id=game_id))
+    else:
+        return redirect(url_for("treasure_views.render_treasure_image_view", game_id=game_id, treasure_id=treasure_id))
+
+
+
+@treasure_view.route('/image/delete', methods=['GET'])
+@login_required
+def delete_treasure_image(user):
+    treasure_id = request.args.get('treasure_id')
+    game_id = request.args.get('game_id')
+    treasure = models.facade.get_treasure_by_id(treasure_id)
+    models.facade.delete_snapshot(user=user, treasure=treasure)
+    return redirect(url_for("treasure_views.render_treasure_image_view", game_id=game_id, treasure_id=treasure_id))
 
 
 """

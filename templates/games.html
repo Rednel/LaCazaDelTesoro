@@ -32,25 +32,26 @@
                     <thead>
                     <th>Nombre del juego</th>
                     <th>Creador</th>
+                    <th>Número de participantes</th>
                     </thead>
                     <tbody>
                     {% for game in games %}
                         <tr>
                             <td>{{ game.name }}</td>
                             <td>{{ game.owner.email }}</td>
+                            <td>{{ game.participants.count() }}</td>
                             <td>
-                                {% if game.participants == None and game.owner.key() == user.key() %}
+                                {% if game.owner.key() == user.key() %}
                                     <a class="btn btn-primary"
                                        href="/games/treasures?game_id={{ game.key() }}">
                                         Editar caza
                                     </a>
-                                {% elif game.participants == None or user not in game.participants %}
+                                {% elif not is_user_joined %}
                                     <a class="btn btn-primary"
-                                       href="/games/treasures?game_id={{ game.key() }}">
-                                        <!--href="/games/join?game_id={{ game.key() }}-->
+                                       href="/games/join?game_id={{ game.key() }}">
                                         Unirse a la caza
                                     </a>
-                                {% else %}
+                                {% elif is_user_joined %}
                                     <a class="btn btn-primary"
                                        href="/games/treasures?game_id={{ game.key() }}">
                                         Abrir caza
@@ -61,7 +62,7 @@
                             {% if game.participants != None and user in game.participants %}
                                 <td>
                                     <a class="btn btn-danger"
-                                       href="">
+                                       href="/games/unjoin?game_id={{ game.key() }}">
                                         Abandonar la caza
                                         <span style="margin-left: 5px;" class="glyphicon glyphicon-list-alt"
                                               aria-hidden="true"></span>

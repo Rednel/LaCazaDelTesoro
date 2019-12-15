@@ -4,6 +4,7 @@ from models.entities.game import Game
 from models.entities.treasure import Treasure
 from models.entities.snapshot import Snapshot
 from models.entities.user import User
+from models.entities.participant import Participant
 
 
 def owning_game(element, user):
@@ -26,7 +27,12 @@ def get_games_not_joined_by_user(user=None):
     :return: all games in the database that are actives and the user hasn't joined yet
     """
     if user is not None:
-        return filter(lambda x: not owning_game(element=x, user=user), Game.all())
+        result = list()
+        for game in Game.all():
+            if game not in get_active_games_by_user(user=user) and game not in get_created_games_by_user(
+                    user=user) and game not in get_completed_games_by_user(user=user):
+                result.append(game)
+        return result
     return list()
 
 
@@ -36,7 +42,11 @@ def get_active_games_by_user(user=None):
     :return: all games in the database that are associated to the user and are not completed yet
     """
     if user is not None:
-        return filter(Game.is_active, user.participating_games)
+        result = list()
+        for participant in Participant.all():
+            if participant.user.key() == user.key() and participant.game.is_active:
+                result.append(participant.game)
+        return result
     return list()
 
 
@@ -46,7 +56,11 @@ def get_completed_games_by_user(user=None):
     :return: all games in the database that are associated to the user and are already completed
     """
     if user is not None:
-        return filter(not Game.is_active, user.participating_games)
+        result = list()
+        for participant in Participant.all():
+            if participant.user.key() == user.key() and not participant.game.is_active:
+                result.append(participant.game)
+        return result
     return list()
 
 
@@ -96,22 +110,32 @@ def delete_game(game_id=None, user=None):
     if user is not None and game_id is not None:
         game = Game.get(game_id)
         if game.owner.key() == user.key():
+            db.delete(game.treasures)
             db.delete(game)
 
 
 def join_game(game_id=None, user=None):
-    """appends user to participants of a game
-
-        Args:
-            :param game_id: The game id which user is going to be joined
-                :type: Game
     """
+
+    :param game_id: idof the game that user joins
+    :param user: user what joins the game
+    """
+
     if user is not None and game_id is not None:
         game = Game.get(game_id)
-        if game.participants is None:
-            game.participants = [user]
-        else:
-            game.participants.append(user)
+        Participant.get_or_insert(key_name=user.email + "_" + game_id, game=game, user=user)
+
+
+def unjoin_game(game_id=None, user=None):
+    """
+
+    :param game_id: idof the game that user joins
+    :param user: user what joins the game
+    """
+
+    if user is not None and game_id is not None:
+        participant = Participant.get_or_insert(key_name=user.email + "_" + game_id)
+        db.delete(participant)
 
 
 def get_game_by_owner_and_name(owner=None, game_name=None):
@@ -173,7 +197,6 @@ def delete_treasure(user=None, treasure=None):
     :param treasure: treasure to remove
     :raise: TransactionFailedError: if the data could not be committed.
     """
-    print(user.key() == treasure.game.owner.key())
     if user is not None and treasure is not None and user.key() == treasure.game.owner.key():
         db.delete(treasure)
 
@@ -214,27 +237,52 @@ def create_snapshot(user=None, treasure=None, img=None):
     :return: Snapshot in case that all parameters are provided. Otherwise its returns a None
     """
     if user is not None and treasure is not None and img is not None:
+        if get_snapshot_by_user_treasure is not None:
+            delete_snapshot(user=user, treasure=treasure)
         return Snapshot.get_or_insert(key_name=user.email + '_' + str(treasure.key()), user=user,
                                       treasure=treasure, img=str(img))
     else:
         return None
 
 
-def delete_snapshot(snapshot=None):
+def delete_snapshot(user=None, treasure=None):
     """
     Removes a snapshot.
-    :param snapshot(Snapshot): snapshot to remove
+    :param user: User that made the snapshot
+    :param treasure: Treasure related with the snapshot to delete
     :raise: TransactionFailedError: if the data could not be committed.
     """
-    db.delete(snapshot)
+    if user is not None and treasure is not None:
+        snapshot = get_snapshot_by_user_treasure(user=user, treasure=treasure)
+        db.delete(snapshot)
 
 
-def update_snapshot(snapshot=None):
+def get_snapshot_by_user_treasure_in_base_64(user=None, treasure=None):
     """
-    Updates a snapshot.
-    :param snapshot(Snapshot): snapshot to update
+    Returns a snapshot based in a user and treasure in base 64
+    :param user: User that made the snapshot
+    :param treasure: Treasure related with the snapshot
+    :return: Snapshot in case that all parameters are provided. Otherwise its returns a None
     """
-    Snapshot.save(snapshot)
+    if user is not None and treasure is not None:
+        for snapshot in Snapshot.all():
+            if snapshot.treasure.key() == treasure.key() and snapshot.user.key() == user.key():
+                return snapshot.img.encode('base64')
+    return None
+
+
+def get_snapshot_by_user_treasure(user=None, treasure=None):
+    """
+    Returns a snapshot based in a user and treasure
+    :param user: User that made the snapshot
+    :param treasure: Treasure related with the snapshot
+    :return: Snapshot in case that all parameters are provided. Otherwise its returns a None
+    """
+    if user is not None and treasure is not None:
+        for snapshot in Snapshot.all():
+            if snapshot.treasure.key() == treasure.key() and snapshot.user.key() == user.key():
+                return snapshot
+    return None
 
 
 def get_all_user():

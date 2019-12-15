@@ -17,7 +17,7 @@
           type='text/css'/>
     <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.9/mapbox-gl-draw.css'
           type='text/css'/>
-    <script src='../static/js/map.js'></script>
+    <script src='/static/js/map.js'></script>
     <link href='https://api.mapbox.com/mapbox-gl-js/v1.4.1/mapbox-gl.css' rel='stylesheet'/>
 
 
@@ -30,6 +30,7 @@
         <span class="navbar-brand mb-0 h1">
             <h5>{{ game.name }}</h5>
             <p><h6>Creada por: {{ game.owner.email }}</h6></p>
+            <p><h6>Número de participantes: {{ game.participants.count() }}</h6></p>
         </span>
         </nav>
     </div>
@@ -64,7 +65,7 @@
                                 <td>{{ treasure.description }}</td>
                                 <td>
                                     <a class="btn btn-primary"
-                                       href="/treasures/image?treasure_id={{ treasure.key() }}">
+                                       href="/games/treasures/image?game_id={{ game.key() }}&treasure_id={{ treasure.key() }}">
                                         Ver imagen
                                     </a>
                                 </td>
