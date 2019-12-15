@@ -59,7 +59,7 @@
                                 {% endif %}
 
                             </td>
-                            {% if game.participants != None and user in game.participants %}
+                            {% if is_user_joined %}
                                 <td>
                                     <a class="btn btn-danger"
                                        href="/games/unjoin?game_id={{ game.key() }}">
