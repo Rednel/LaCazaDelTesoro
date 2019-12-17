@@ -86,6 +86,28 @@ def get_all_user():
     return User.all()
 
 
+def set_user_twitter_tag(user, tag):
+    user.twitter_tag = tag
+    user.put()
+
+
+def delete_twitter_tag(user):
+    user.twitter_tag = None
+    user.put()
+
+
+def set_user_facebook_tag(user, tag, _id):
+    user.facebook_tag = tag
+    user.facebook_tag_id = _id
+    user.put()
+
+
+def delete_facebook_tag(user):
+    user.facebook_tag = None
+    user.facebook_tag_id = None
+    user.put()
+
+
 def get_or_insert_user(email=None, name=None, surname="", picture=None):
     if name is None or email is None or picture is None:
         return None

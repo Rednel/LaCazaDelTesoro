@@ -5,3 +5,5 @@ Werkzeug==0.16.0
 google
 flask_dance
 requests-toolbelt
+twitter
+facebook-sdk

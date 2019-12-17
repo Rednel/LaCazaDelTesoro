@@ -1,0 +1,88 @@
+{% extends 'navbar.html' %}
+
+
+{% block tittle %} Perfil {% endblock %}
+
+
+{% block content %}
+
+<div style="margin-right: 9%; margin-left: 9%">
+
+    <div class="p-5 bg-white rounded box-shadow align-content-center">
+
+        <div class="form-group d-flex justify-content-center px-3 pb-3">
+            <div class="form-group">
+                <input type="text" readonly class="form-control-plaintext" style="width: 87px;" value="Email:">
+            </div>
+            <input class="form-control" type="text" placeholder="" readonly
+                       value="{{ user.email }}">
+        </div>
+
+        <div class="form-group d-flex justify-content-center px-3 pb-3">
+            <div class="form-group pr-3">
+                <input type="text" readonly class="form-control-plaintext" style="width: 70px;" value="Nombre:">
+            </div>
+            <input class="form-control" type="text" placeholder="" readonly
+                       value="{{ user.name }}">
+            <div class="form-group pl-4 pr-3">
+                <input type="text" readonly class="form-control-plaintext" style="width: 70px;" value="Apellido:">
+            </div>
+            <input class="form-control pl-3" type="text" placeholder="" readonly
+                       value="{{ user.surname }}">
+        </div>
+
+         <div class="form-group d-flex px-3 pb-3">
+            <div class="form-group pr-3">
+                <input type="text" readonly class="form-control-plaintext" style="width: 70px;" value="Rol:">
+            </div>
+            <input class="form-control" style="width: 330px;" type="text" placeholder="" readonly
+                       value="{{ user.role }}">
+        </div>
+
+        <div class="form-inline d-flex pl-3">
+            <div class="form-group mb-2">
+                <input type="text" readonly class="form-control-plaintext" value="Cuenta de Twitter:">
+            </div>
+            <div class="form-group mx-sm-3 mb-2">
+                <input type="text" class="form-control" placeholder="" readonly
+                       value="{{ user.twitter_tag if user.twitter_tag is not none else '' }}">
+                <form class="form-group mx-sm-3" action="/twitter/login">
+                    <button class="btn btn-twitter btn-block text-uppercase ml-5" type="submit"><i
+                            class="fab fa-twitter mr-2"></i> Confirm identity on Twitter
+                    </button>
+                </form>
+                {% if user.twitter_tag is not none %}
+                <form class="form-group mx-sm-3" action="/twitter/logout">
+                    <button class="btn btn-twitter-logout btn-block text-uppercase ml-3" type="submit"><i
+                            class="fab fa-twitter mr-2"></i> Log out from Twitter
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+        <div class="form-inline mt-5 d-flex pl-3">
+            <div class="form-group mb-2">
+                <input type="text" readonly class="form-control-plaintext" value="Cuenta de Facebook:">
+            </div>
+            <div class="form-group mx-sm-3 mb-2">
+                <input type="text" class="form-control" placeholder="" readonly
+                       value="{{ user.facebook_tag if user.facebook_tag is not none else '' }}">
+                <form class="form-group mx-sm-3" action="/facebook/login">
+                    <button class="btn btn-facebook btn-block text-uppercase ml-5" type="submit"><i
+                            class="fab fa-facebook-f mr-2"></i> Confirm identity on Facebook
+                    </button>
+                </form>
+                {% if user.facebook_tag is not none %}
+                <form class="form-group mx-sm-3" action="/facebook/logout">
+                    <button class="btn btn-facebook-logout btn-block text-uppercase ml-3" type="submit"><i
+                            class="fab fa-facebook-f mr-2"></i> Log out from Facebook
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
