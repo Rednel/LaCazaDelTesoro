@@ -3,6 +3,7 @@ from models.entities.game import Game
 
 
 class Treasure(db.Model):
+    name = db.StringProperty(required=True)
     lat = db.FloatProperty(required=True)
     lon = db.FloatProperty(required=True)
     description = db.StringProperty(default="")

@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src='https://api.mapbox.com/mapbox-gl-js/v1.4.1/mapbox-gl.js'></script>
+    <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/turf/v3.0.11/turf.min.js'></script>
+    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.9/mapbox-gl-draw.js'></script>
+    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.2/mapbox-gl-geocoder.min.js'></script>
+    <link rel='stylesheet'
+          href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.2/mapbox-gl-geocoder.css'
+          type='text/css'/>
+    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.9/mapbox-gl-draw.css'
+          type='text/css'/>
+    <script src='/static/js/map.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v1.4.1/mapbox-gl.css' rel='stylesheet'/>
+
+    <title>Tesoros del participante {{ player.email }}</title>
+</head>
+<body>
+
+<h1>Tesoros desenterrados por el pirata {{ player.email }} en la caza {{ game.name }}</h1>
+
+{% if game.owner==user %}
+
+    <table class="table">
+        <thead>
+        <th>Nombre del tesoro</th>
+        <th>Imagen del tesoro</th>
+        <th>¿Eliminar tesoro inv&aacute;lido?</th>
+        </thead>
+        <tbody>
+        {% for (x,y) in user_snapshots %}
+
+            <tr>
+                <td>{{ x.treasure.name }}</td>
+                <td><img src="data:image/png;base64, {{ y }}" alt="Treasure image"/></td>
+                <td>
+                    <a class="btn btn-danger"
+                       href="/games/treasures/image/admin_delete?game_id={{ game.key() }}&treasure_id={{ x.treasure.key() }}&player_id={{ player.key() }}">
+                        Eliminar
+                        <span style="margin-left: 5px;" class="glyphicon glyphicon-list-alt"
+                              aria-hidden="true"></span>
+                    </a>
+                </td>
+            </tr>
+
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% if user_snapshots|length == game.treasures.count() and game.is_active %}
+        <a class="btn btn-primary"
+           href="/games/win?game_id={{ game.key() }}&winner_id={{ player.key() }}">
+            Declarar ganador
+        </a>
+    {% endif %}
+
+{% else %}
+    <h2>Fuera de aqu&iacute; polizón</h2>
+{% endif %}
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+</body>
+</html>

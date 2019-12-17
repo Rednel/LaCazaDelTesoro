@@ -16,4 +16,7 @@ class User(db.Model, JSONEncoder):
                 "picture": o.picture,
                 "role": o.role}
 
+    def __eq__(self, other):
+        return isinstance(other, User) and other.key() == self.key()
+
     JSONEncoder.default = default
