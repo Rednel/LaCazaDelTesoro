@@ -3,7 +3,7 @@
 
 <div class="row">
     <div class="col-lg-12 text-center">
-        <h1>Users <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span></h1>
+        <h1>Users <span class="glyphicon glyphicon-user" aria-hidden="true"></span></h1>
 
     </div>
 </div>
@@ -21,25 +21,19 @@
     <div class="col-md-8">
         <table class="table">
             <thead>
-            <th>Username</th>
             <th>E-mail</th>
-            <th>First name</th>
-            <th>Last name</th>
+            <th>name</th>
+            <th>picture</th>
             <th>Role</th>
-            <th>Gender</th>
-            <th>Fecha de creaci&oacute;n</th>
             <th>Acciones</th>
             </thead>
             <tbody>
             {% for user in data  %}
             <tr>
-                <td>{{ user.user_name }}</td>
-                <td>{{ user.email }}</td>
-                <td>{{ user.first_name }}</td>
-                <td>{{ user.last_name }}</td>
-                <td>{{ user.role }}</td>
-                <td>{{ user.gender }}</td>
-                <td>{{ user.date_of_birth.strftime('%Y-%m-%d') }}</td>
+                <td>{{ user.email | replace("(u'","") | replace("',)","") }}</td>
+                <td>{{ user.surname | replace("(u'","") | replace("',)","")}}</td>
+                <td>{{ user.picture | replace("(u'","") | replace("',)","")}}</td>
+                <td>{{ user.role | replace("(u'","") | replace("',)","")}}</td>
                 <td>
                     <a class="btn btn-primary btn-block" href="/user_one/{{ user.key().id() }}">profile </a>
                     <a class="btn btn-warning btn-block" href="/user_edit/{{ user.key().id() }}">Editar </a>

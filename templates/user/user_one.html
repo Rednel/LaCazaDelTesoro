@@ -8,12 +8,11 @@
 <div class="row">
     <div class="col-md-2"></div>
     <div class="col-md-8">
-        <p><b>Username :</b>  {{ user.user_name }}</p>
-        <p><b>Email :</b>  {{ user.email }}</p>
-        <p><b>First name :</b>  {{ user.first_name }}</p>
-        <p><b>Last name :</b>  {{ user.last_name }}</p>
-        <p><b>gender :</b>  {{ user.user_name }}</p>
-        <p><a class="btn btn-primary" href="/user_all">Users list </a></p>
+        <p><b>Email :</b>  {{ user.email | replace("(u'","") | replace("',)","") }}</p>
+        <p><b>Surname :</b>  {{ user.surname | replace("(u'","") | replace("',)","")}}</p>
+        <p><b>Name :</b>  {{ user.name | replace("(u'","") | replace("',)","") }}</p>
+        <p><b>Picture :</b>  {{ user.picture }}</p>
+
 
     </div>
     <div class="col-md-2">

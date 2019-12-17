@@ -6,7 +6,7 @@ class User(db.Model, JSONEncoder):
     email = db.StringProperty(required=True)
     name = db.StringProperty(required=True)
     surname = db.StringProperty(required=True)
-    picture = db.StringProperty(required=True)
+    picture = db.StringProperty(required=False)
     twitter_tag = db.StringProperty(default=None)
     facebook_tag = db.StringProperty(default=None)
     facebook_tag_id = db.StringProperty(default=None)
