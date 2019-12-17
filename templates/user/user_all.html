@@ -30,10 +30,10 @@
             <tbody>
             {% for user in data  %}
             <tr>
-                <td>{{ user.email }}</td>
-                <td>{{ user.surname }}</td>
-                <td>{{ user.picture }}</td>
-                <td>{{ user.role }}</td>
+                <td>{{ user.email | replace("(u'","") | replace("',)","") }}</td>
+                <td>{{ user.surname | replace("(u'","") | replace("',)","")}}</td>
+                <td>{{ user.picture | replace("(u'","") | replace("',)","")}}</td>
+                <td>{{ user.role | replace("(u'","") | replace("',)","")}}</td>
                 <td>
                     <a class="btn btn-primary btn-block" href="/user_one/{{ user.key().id() }}">profile </a>
                     <a class="btn btn-warning btn-block" href="/user_edit/{{ user.key().id() }}">Editar </a>

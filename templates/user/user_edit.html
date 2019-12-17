@@ -21,7 +21,7 @@
 
                 <div class="col-sm-6">
                     <input type="text" class="form-control" name="email" id="email"
-                           placeholder="text" value="{{ user.email }}">
+                           placeholder="text" value="{{ user.email | replace("(u'","") | replace("',)","")}}">
                 </div>
             </div>
 
@@ -30,7 +30,7 @@
 
                 <div class="col-sm-6">
                     <input type="text" class="form-control" name="name" id="email"
-                           placeholder="text" value="{{ user.name }}">
+                           placeholder="text" value="{{ user.name | replace("(u'","") | replace("',)","")}}">
                 </div>
             </div>
 
@@ -38,7 +38,7 @@
                 <label for="name" class="col-sm-3 control-label">Surname</label>
 
                 <div class="col-sm-6">
-                    <input type="text" class="form-control" name="surname" id="surname"  value="{{ user.surname }}">
+                    <input type="text" class="form-control" name="surname" id="surname"  value="{{ user.surname | replace("(u'","") | replace("',)","")}}">
                 </div>
             </div>
                   <div class="form-group">
