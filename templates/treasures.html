@@ -52,6 +52,7 @@
                 {% if treasures %}
                     <table class="table">
                         <thead>
+                        <th>Nombre</th>
                         <th>Latitud</th>
                         <th>Longitud</th>
                         <th>Descripci&oacute;n</th>
@@ -60,6 +61,7 @@
                         <tbody>
                         {% for treasure in treasures %}
                             <tr>
+                                <td>{{ treasure.name }}</td>
                                 <td>{{ treasure.lat }}</td>
                                 <td>{{ treasure.lon }}</td>
                                 <td>{{ treasure.description }}</td>
@@ -117,8 +119,8 @@
                                 {% if y == treasures.count() and game.is_active %}
                                     <td>
                                         <a class="btn btn-primary"
-                                           href="/games/win?game_id={{ game.key() }}&winner_id={{ x.key() }}">
-                                            Declarar ganador
+                                           href="/games/snapshots?game_id={{ game.key() }}&player_id={{ x.key() }}">
+                                            Verificar tesoros
                                         </a>
                                     </td>
                                 {% endif %}

@@ -11,11 +11,7 @@ def show_treasures_get(user):
     game_id = request.args.get('game_id')
     game = models.facade.get_game_by_id(game_id=game_id)
     treasures = models.facade.get_all_treasures_by_game(game=game)
-    participant_images_tuples = list()
-    for participant in game.participants:
-        number_of_images = len(filter(lambda image: image.treasure in game.treasures, participant.user.images))
-        participant_images_tuples.append((participant.user, number_of_images))
-
+    participant_images_tuples = models.facade.get_snapshots_by_game(owner=user, game=game)
     return render_template('treasures.html', game=game, user=user, treasures=treasures,
                            participant_images_tuples=participant_images_tuples)
 
@@ -30,13 +26,14 @@ def render_treasures_form_get():
 @treasure_view.route('/add', methods=['POST'])
 @login_required
 def render_treasures_form_post(user):
+    name = request.form.get('inputName')
     lat = request.form.get('inputLatitude')
     lon = request.form.get('inputLongitude')
     des = request.form.get('inputDescription')
-    if lat != "" and lon != "":
+    if lat != "" and lon != "" and name != "":
         game_id = request.args.get('game_id')
         game = models.facade.get_game_by_id(game_id=game_id)
-        models.facade.create_treasure(game, user, float(lat), float(lon), des)
+        models.facade.create_treasure(game=game, user=user, name=name, lat=float(lat), lon=float(lon), description=des)
         return redirect(url_for("treasure_views.show_treasures_get", game_id=game_id))
     else:
         return render_template('new_treasure_form.html')
@@ -88,25 +85,13 @@ def delete_treasure_image(user):
     return redirect(url_for("treasure_views.render_treasure_image_view", game_id=game_id, treasure_id=treasure_id))
 
 
-"""
-TODO
-    Hacer vista imagen tesoro
-    La vista contendra la imagen del tesoro si la tuviera y una opcion para subir una imagen de tesoro
-    
-    if 'file' not in request.files:
-			flash('No file part')
-			return redirect(request.url)
-		file = request.files['file']
-		if file.filename == '':
-			flash('No file selected for uploading')
-			return redirect(request.url)
-		if file and allowed_file(file.filename):
-			filename = secure_filename(file.filename)
-			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-			flash('File successfully uploaded')
-			return redirect('/')
-		else:
-			flash('Allowed file types are txt, pdf, png, jpg, jpeg, gif')
-			return redirect(request.url)
-
-"""
+@treasure_view.route('/image/admin_delete', methods=['GET'])
+@login_required
+def delete_treasure_image_by_game_admin(user):
+    treasure_id = request.args.get('treasure_id')
+    game_id = request.args.get('game_id')
+    player_id = request.args.get('player_id')
+    treasure = models.facade.get_treasure_by_id(treasure_id=treasure_id)
+    player = models.facade.get_user_by_user_id(user_id=player_id)
+    models.facade.delete_snapshot(user=player, treasure=treasure)
+    return redirect(url_for("game_views.view_participant_snapshots", game_id=game_id, player_id=player_id))
