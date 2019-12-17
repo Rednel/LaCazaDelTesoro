@@ -1,13 +1,15 @@
-from flask import Flask, render_template, redirect, request, session
+from flask import Flask, render_template, redirect, request
 from google.appengine.ext import db
 import os
-from views.google import google_bp, login_required
+from views.google_views import google_bp, login_required, google_view, get_user
 import requests_toolbelt.adapters.appengine
 from models.entities.user import User
 from models.entities.conversation import Conversation
 from models.entities.messages import Message
 import time
-from views.google import google_view
+from views.twitter_views import twitter_view, twitter_bp
+from views.facebook_views import facebook_view, facebook_bp
+from views.profile import profile_view
 
 # Patch to fix AppEngine
 requests_toolbelt.adapters.appengine.monkeypatch()
@@ -16,12 +18,18 @@ app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
 
 app.register_blueprint(google_bp, url_prefix="/")
+app.register_blueprint(twitter_bp, url_prefix="/")
+app.register_blueprint(facebook_bp, url_prefix="/")
 app.register_blueprint(google_view, url_prefix="/google")
+app.register_blueprint(twitter_view, url_prefix="/twitter")
+app.register_blueprint(facebook_view, url_prefix="/facebook")
+app.register_blueprint(profile_view, url_prefix="/profile")
 
 
 @app.route('/')
-def home():
-    return render_template('index.html')
+@get_user
+def home(user=None):
+    return render_template('home.html', user=user)
 
   
 @app.route("/treasure")  # creates a new treasure

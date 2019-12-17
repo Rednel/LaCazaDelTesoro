@@ -2,10 +2,9 @@ import os
 from flask_dance.contrib.google import make_google_blueprint, google
 from flask import session, redirect, url_for, Blueprint, abort
 from oauthlib.oauth2.rfc6749.errors import TokenExpiredError
-import requests
-
 from models.facade import get_or_insert_user
 from functools import wraps
+import requests
 
 GOOGLE_OAUTH_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID")
 GOOGLE_OAUTH_SECRET = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET")
@@ -28,16 +27,18 @@ google_bp = make_google_blueprint(
 def log_in_google():
     if not google.authorized:
         return redirect(url_for("google.login"))
-    json = google.get("/oauth2/v2/userinfo").json()
-    user = get_or_insert_user(email=json['email'], name=json['given_name'],
-                              surname=json['family_name'], picture=json['picture'])
-    session['user'] = user
+    try:
+        json = google.get("/oauth2/v2/userinfo").json()
+        get_or_insert_user(email=json['email'], name=json['given_name'],
+                           surname=json['family_name'], picture=json['picture'])
+    except TokenExpiredError:
+        return redirect(url_for("google.login"))
     return redirect(url_for("home"))
 
 
 @google_view.route("/logout")
 def log_out_google():
-    session.clear()
+    session.pop('google_oauth_token', None)
     return redirect(url_for("home"))
 
 
@@ -56,3 +57,21 @@ def login_required(function):
         except requests.RequestException:
             abort(500)
     return wrap
+
+
+def get_user(function):
+    @wraps(function)
+    def wrap(*args, **kwargs):
+        if not google.authorized:
+            function(*args, **kwargs)
+        try:
+            json = google.get('/oauth2/v2/userinfo').json()
+            user = get_or_insert_user(email=json['email'], name=json['given_name'],
+                                      surname=json['family_name'], picture=json['picture'])
+            return function(user, *args, **kwargs)
+        except TokenExpiredError:
+            return function(*args, **kwargs)
+        except KeyError:
+            return function(*args, **kwargs)
+    return wrap
+

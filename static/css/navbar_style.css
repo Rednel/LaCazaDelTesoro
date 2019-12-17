@@ -1,0 +1,148 @@
+.crop{
+  width: 40px;
+  height: 40px;
+  overflow:hidden;   
+  position:relative;
+  border-radius: 50%;
+}
+
+.background-init{
+  background-color: white;
+}
+
+.letter-color{
+  color: gray;
+}
+
+.dropdown-toggle::after {
+  display: none;
+}
+
+.object-color{
+  color: gray;
+}
+
+#dropdown-menu-centered {
+  left: 0;
+  right: 0;
+}
+
+.topbar-divider {
+  width: 0;
+  border-right: 1px solid #e3e6f0;
+  height: calc(4.375rem - 2rem);
+  margin: auto 1rem;
+}
+
+body, html {
+  height: 100%;
+  overflow-y: hidden;
+}
+
+.bg {
+  /* The image used */
+  background-image: url("../images/background.jpeg");
+
+  /* Full height */
+  height: 100%;
+
+  /* Center and scale the image nicely */
+  /*opacity:0.2;*/
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.bg:before{
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  background-color: rgba(255, 255, 255, 0.6);
+}
+
+.carlos{
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-55%);
+  /*margin-top: -10px;*/
+}
+
+.form-signin .btn {
+  font-size: 80%;
+  border-radius: 5rem;
+  letter-spacing: .1rem;
+  font-weight: bold;
+  padding: 1rem;
+  transition: all 0.2s;
+}
+
+.btn-google {
+  color: white;
+  background-color: #ea4335;
+  width: 250px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.btn-facebook {
+  color: white;
+  background-color: #3b5998;
+  width: 250px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.btn-facebook-logout {
+  color: white;
+  background-color: #f82400;
+  width: 250px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.btn-twitter {
+  color: white;
+  background-color: #0697f8;
+  width: 250px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.btn-twitter-logout{
+  color: white;
+  background-color: #f82400;
+  width: 250px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.expand {
+  width: 240px;
+}
+
+@media screen and (min-width: 500px){
+  .text-centered {
+    width: 500px;
+    text-align: center;
+    margin-right: auto;
+    margin-left: auto;
+    transform: translate(0%,-100%);
+  }
+} 
+
+@media screen and (max-width: 500px){
+  .text-centered {
+    width: 95%;
+    text-align: center;
+    margin-right: auto;
+    margin-left: auto;
+    transform: translate(0%,-100%);
+  }
+}
+
+.box-shadow { box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05); }
+
