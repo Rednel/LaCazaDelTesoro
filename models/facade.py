@@ -148,10 +148,6 @@ def win_game(game=None, winner=None, owner=None):
     :param winner: winner of the game
     :param owner: owner of the game
     """
-    print(game is not None)
-    print(winner is not None)
-    print(owner is not None)
-    print(game.owner.key() == owner.key())
     if game is not None and winner is not None and owner is not None and game.owner.key() == owner.key():
         game.winner = winner
         game.is_active = False
@@ -200,18 +196,21 @@ def exists_game(game=None):
     return Game.get_by_key_name(key_names=game.owner.email + "_" + game.name) is not None
 
 
-def create_treasure(game=None, user=None, lat=None, lon=None, description=None):
+def create_treasure(game=None, user=None, name=None, lat=None, lon=None, description=None):
     """
     Create and returns a treasure if doesnt exists one in the db with the latitude and longitude provided.
     If it exists just returns the treasure.
+    :param name(string): treasure name
     :param lat(double): latitude
     :param lon(double): longitude
     :param description(string): treasure description, optional
     :param game(Game): game owner of the treasure
     :return: Treasure
     """
-    if lat is not None and lon is not None and user is not None and user.key() == game.owner.key():
-        return Treasure.get_or_insert(key_name=str(lat) + '_' + str(lon), lat=lat, lon=lon, description=description,
+    if name is not None and lat is not None and lon is not None and user is not None and user.key() == game.owner.key():
+        return Treasure.get_or_insert(key_name=name + '_' + str(lat) + '_' + str(lon), lat=lat, lon=lon,
+                                      name=name,
+                                      description=description,
                                       game=game)
     else:
         return None
@@ -310,6 +309,38 @@ def get_snapshot_by_user_treasure(user=None, treasure=None):
             if snapshot.treasure.key() == treasure.key() and snapshot.user.key() == user.key():
                 return snapshot
     return None
+
+
+def get_snapshots_by_game(owner=None, game=None):
+    """
+    Returns participant, images tuples based in a game
+    :param game: Game that contains the snapshots
+    :param owner: Owner of the game that is the only that can have access to the information
+    :return: participant, images tuples in case that all parameters are provided. Otherwise its returns a None
+    """
+    result = list()
+    if owner is not None and game is not None and owner.key() == game.owner.key():
+        for participant in game.participants:
+            images = len(filter(lambda image: image.treasure in game.treasures, participant.user.images))
+            result.append((participant.user, images))
+    return result
+
+
+def get_snapshots_by_game_and_user(owner=None, game=None, user=None):
+    """
+    Returns snapshot list based in a user and game
+    :param game: Game that contains the snapshots
+    :param owner: Owner of the game that is the only that can have access to the information
+    :param user: User provided to filter snapshots
+    :return: snapshot list in case that all parameters are provided. Otherwise its returns a None
+    """
+    result = list()
+    if owner is not None and game is not None and owner.key() == game.owner.key() and user is not None and game in get_active_games_by_user(
+            user=user):
+        images = filter(lambda image: image.treasure in game.treasures, user.images)
+        for image in images:
+            result.append((image, image.img.encode('base64')))
+    return result
 
 
 def get_user_by_user_id(user_id=None):

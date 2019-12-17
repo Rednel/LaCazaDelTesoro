@@ -73,6 +73,18 @@ def unjoin_game(user):
     return redirect(url_for("game_views.show_active_games"))
 
 
+@game_view.route('/snapshots', methods=['GET'])
+@login_required
+def view_participant_snapshots(user):
+    game_id = request.args.get('game_id')
+    player_id = request.args.get('player_id')
+    game = models.facade.get_game_by_id(game_id=game_id)
+    player = models.facade.get_user_by_user_id(user_id=player_id)
+    user_snapshots = models.facade.get_snapshots_by_game_and_user(game=game, owner=user, user=player)
+    return render_template('participant_images_resume.html', game=game, user=user, player=player,
+                           user_snapshots=user_snapshots)
+
+
 @game_view.route('/win', methods=['GET'])
 @login_required
 def win_game(owner):

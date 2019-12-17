@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
@@ -33,6 +34,8 @@
                     <th>Nombre del juego</th>
                     <th>Creador</th>
                     <th>Número de participantes</th>
+                    <th>Completada</th>
+                    <th>Ganador</th>
                     </thead>
                     <tbody>
                     {% for game in games %}
@@ -40,6 +43,14 @@
                             <td>{{ game.name }}</td>
                             <td>{{ game.owner.email }}</td>
                             <td>{{ game.participants.count() }}</td>
+                            {% if game.is_active %}
+                                <td>&#x2716;</td>
+                                <td>Aún no hay ning&uacute;n ganador</td>
+                            {% else %}
+                                <td>&#x2714;</td>
+                                <td>{{ game.winner.email }}</td>
+                            {% endif %}
+
                             <td>
                                 {% if game.owner.key() == user.key() %}
                                     <a class="btn btn-primary"
@@ -64,6 +75,7 @@
                                 {% endif %}
 
                             </td>
+
                             {% if is_user_joined %}
                                 <td>
                                     <a class="btn btn-danger"
