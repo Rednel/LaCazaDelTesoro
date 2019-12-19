@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <div class="list-group">
+    {% for user in users  %}
+        <a href="../add_conversation/{{ user.key().id() }}" class="list-group-item">{{ user.user_name }}: {{ user.first_name }} {{ user.last_name }}</a>
+    {% endfor %}
+    </div>
+
+{% endblock %}
