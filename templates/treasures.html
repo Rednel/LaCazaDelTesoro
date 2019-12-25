@@ -55,7 +55,6 @@
                         <th>Nombre</th>
                         <th>Latitud</th>
                         <th>Longitud</th>
-                        <th>Descripci&oacute;n</th>
                         <th>Gestionar imagen</th>
                         </thead>
                         <tbody>
@@ -64,22 +63,11 @@
                                 <td>{{ treasure.name }}</td>
                                 <td>{{ treasure.lat }}</td>
                                 <td>{{ treasure.lon }}</td>
-                                <td>{{ treasure.description }}</td>
                                 <td>
                                     <a class="btn btn-primary"
                                        href="/games/treasures/image?game_id={{ game.key() }}&treasure_id={{ treasure.key() }}">
                                         Ver imagen
                                     </a>
-                                </td>
-                                <td>
-                                    {% if user.key() == treasure.game.owner.key() %}
-                                        <a class="btn btn-danger"
-                                           href="/games/treasures/remove?game_id={{ game.key() }}&treasure_id={{ treasure.key() }}">
-                                            Eliminar tesoro defectuoso
-                                            <span style="margin-left: 5px;" class="glyphicon glyphicon-list-alt"
-                                                  aria-hidden="true"></span>
-                                        </a>
-                                    {% endif %}
                                 </td>
                             </tr>
                         {% endfor %}
@@ -99,8 +87,9 @@
 
                 {% if user.key() == game.owner.key() %}
                     <br/>
-                    <a class="btn btn-primary" href="/games/treasures/add?game_id={{ game.key() }}">
-                        Crear tesoro
+                    <a class="btn btn-primary"
+                       href=javaScript:completeAndRedirect()>
+                        Actualizar tesoros
                         <span style="margin-left: 5px;" class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
                     </a>
                     <br/>
@@ -138,7 +127,6 @@
             </div>
         </div>
     </div>
-
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
@@ -150,8 +138,20 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
             integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
             crossorigin="anonymous"></script>
+
     <script>
-        createInteractiveMap("interactive-map");
+        if ('{{ game.map|safe }}' === 'None') {
+            createInteractiveMap("interactive-map");
+        } else {
+            renderGeoJSON("interactive-map", {{ game.map|safe }})
+        }
+    </script>
+
+    <script>
+        function completeAndRedirect() {
+            const exportedMap = exportMap("interactive-map");
+            location.href = "/games/treasures/add?game_id={{ game.key() }}&map_json=" + exportedMap;
+        }
     </script>
 </div>
 </body>

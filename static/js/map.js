@@ -27,11 +27,11 @@ var drawers = new Object();
  * @param {*} map
  */
 function setLocation(map) {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(function(position) {
-      map.setCenter([position.coords.longitude, position.coords.latitude]);
-    });
-  }
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function (position) {
+            map.setCenter([position.coords.longitude, position.coords.latitude]);
+        });
+    }
 }
 
 /**
@@ -39,7 +39,7 @@ function setLocation(map) {
  * @param {*} id
  */
 function exportMap(id) {
-  return JSON.stringify(drawers[id].getAll());
+    return JSON.stringify(drawers[id].getAll());
 }
 
 /**
@@ -48,11 +48,11 @@ function exportMap(id) {
  * @param {*} coordinates
  */
 function closePopup(id, coordinates) {
-  var popup = document.querySelector('.mapboxgl-popup-content');
-  if (id) {
-    deleteMarker(id, coordinates);
-  }
-  popup.style.display = "none";
+    var popup = document.querySelector('.mapboxgl-popup-content');
+    if (id) {
+        deleteMarker(id, coordinates);
+    }
+    popup.style.display = "none";
 }
 
 /**
@@ -62,24 +62,23 @@ function closePopup(id, coordinates) {
  * @param {*} coordinates
  */
 function setMarker(id, coordinates) {
-  map = maps[id];
-  var errorElement = document.querySelector('.treasure-error');
-  try {
-    var name = document.querySelector('#treasure-input').value;
-    if (name === "") {
-      throw new RangeError("empty name");
+    map = maps[id];
+    var errorElement = document.querySelector('.treasure-error');
+    try {
+        var name = document.querySelector('#treasure-input').value;
+        if (name === "") {
+            throw new RangeError("empty name");
+        }
+        map.addSource(name, convertToGeoJSON(coordinates));
+        setPointName(id, coordinates, name);
+        createMarkerElement(id, coordinates, name);
+        closePopup();
+    } catch (err) {
+        if (err instanceof RangeError) {
+            document.getElementById("treasure-error-msg").innerHTML = "Empty name";
+        }
+        errorElement.style.display = "block";
     }
-    map.addSource(name, convertToGeoJSON(coordinates));
-    setPointName(id, coordinates, name);
-    createMarkerElement(id, coordinates, name);
-    closePopup();
-  }
-  catch (err) {
-    if (err instanceof RangeError) {
-      document.getElementById("treasure-error-msg").innerHTML = "Empty name";
-    }
-    errorElement.style.display = "block";
-  }
 }
 
 /**
@@ -90,12 +89,12 @@ function setMarker(id, coordinates) {
  * @param {*} name
  */
 function createMarkerElement(id, coordinates, name) {
-  map = maps[id];
-  marker_id = `marker-${name}`;
-  popup_id = `popup-marker-${name}`;
-  var popup = new mapboxgl.Popup({ closeOnClick: true })
-  .setLngLat(coordinates)
-  .setHTML(`
+    map = maps[id];
+    marker_id = `marker-${name}`;
+    popup_id = `popup-marker-${name}`;
+    var popup = new mapboxgl.Popup({closeOnClick: true})
+        .setLngLat(coordinates)
+        .setHTML(`
   <div class="treasure-info" id="${popup_id}">
     <p class="treasure-name">${name}</p>
     <div class="treasure-buttons">
@@ -103,20 +102,20 @@ function createMarkerElement(id, coordinates, name) {
     </div>
   </div>
 `);
-  var marker = document.createElement('div');
-  marker.setAttribute('id', marker_id);
-  marker.className = 'marker';
-  marker.style.backgroundImage = 'url("../static/img/marker.svg")';
-  marker.style.width = '40px';
-  marker.style.height = '40px';
+    var marker = document.createElement('div');
+    marker.setAttribute('id', marker_id);
+    marker.className = 'marker';
+    marker.style.backgroundImage = 'url("../../static/img/marker.svg")';
+    marker.style.width = '40px';
+    marker.style.height = '40px';
 
-  marker.addEventListener('mouseover', function () {
-    popup.addTo(map);
-  });
+    marker.addEventListener('mouseover', function () {
+        popup.addTo(map);
+    });
 
-  new mapboxgl.Marker(marker)
-  .setLngLat(coordinates)
-  .addTo(map);
+    new mapboxgl.Marker(marker)
+        .setLngLat(coordinates)
+        .addTo(map);
 }
 
 /**
@@ -128,9 +127,9 @@ function createMarkerElement(id, coordinates, name) {
  * @param {*} coordinates
  */
 function deleteFullMarker(id, marker_id, popup_id, coordinates) {
-  document.getElementById(marker_id).remove();
-  document.getElementById(popup_id).parentElement.remove();
-  this.deleteMarker(id, coordinates);
+    document.getElementById(marker_id).remove();
+    document.getElementById(popup_id).parentElement.remove();
+    this.deleteMarker(id, coordinates);
 }
 
 /**
@@ -139,9 +138,9 @@ function deleteFullMarker(id, marker_id, popup_id, coordinates) {
  * @param {*} coordinates
  */
 function deleteMarker(id, coordinates) {
-  drawer = drawers[id];
-  var feature_id = searchFeature(drawer.getAll().features, coordinates);
-  drawer.delete(feature_id);
+    drawer = drawers[id];
+    var feature_id = searchFeature(drawer.getAll().features, coordinates);
+    drawer.delete(feature_id);
 }
 
 /**
@@ -151,9 +150,9 @@ function deleteMarker(id, coordinates) {
  * @param {*} name
  */
 function setPointName(id, coordinates, name) {
-  var drawer = drawers[id];
-  var feature_id = searchFeature(drawer.getAll().features, coordinates);
-  drawer.setFeatureProperty(feature_id, 'name', name);
+    var drawer = drawers[id];
+    var feature_id = searchFeature(drawer.getAll().features, coordinates);
+    drawer.setFeatureProperty(feature_id, 'name', name);
 }
 
 /**
@@ -162,13 +161,14 @@ function setPointName(id, coordinates, name) {
  * @param {*} coordinates
  */
 function searchFeature(features, coordinates) {
-  var feature_id;
-  features.map((feature) => {
-    if (feature.geometry.coordinates.every(e => coordinates.includes(e))) {
-      feature_id = feature.id;
-    };
-  });
-  return feature_id;
+    var feature_id;
+    features.map((feature) => {
+        if (feature.geometry.coordinates.every(e => coordinates.includes(e))) {
+            feature_id = feature.id;
+        }
+        ;
+    });
+    return feature_id;
 }
 
 /**
@@ -176,22 +176,22 @@ function searchFeature(features, coordinates) {
  * @param {*} coordinates
  */
 function convertToGeoJSON(coordinates) {
-  return {
-    type: "geojson",
-    data: {
-      type: "FeatureCollection",
-      features: [
-        {
-          type: "Feature",
-          properties: {},
-          geometry: {
-            type: "Point",
-            coordinates: coordinates
-          }
+    return {
+        type: "geojson",
+        data: {
+            type: "FeatureCollection",
+            features: [
+                {
+                    type: "Feature",
+                    properties: {},
+                    geometry: {
+                        type: "Point",
+                        coordinates: coordinates
+                    }
+                }
+            ]
         }
-      ]
-    }
-  };
+    };
 }
 
 /**
@@ -200,38 +200,70 @@ function convertToGeoJSON(coordinates) {
  * @param {*} geojson
  */
 function renderGeoJSON(id, geojson) {
-  mapboxgl.accessToken =
-    "pk.eyJ1IjoiYWx2YXJvZ2Y5NyIsImEiOiJjazMzMG1qdGMwYjMzM25tcTNtNmN5c2RqIn0.pXXfUb1xKca_E8NLPVnyLw";
+    mapboxgl.accessToken =
+        "pk.eyJ1IjoiYWx2YXJvZ2Y5NyIsImEiOiJjazMzMG1qdGMwYjMzM25tcTNtNmN5c2RqIn0.pXXfUb1xKca_E8NLPVnyLw";
 
-  var map = new mapboxgl.Map({
-    container: id,
-    style: "mapbox://styles/mapbox/streets-v11",
-    center: [0, 0],
-    zoom: 12
-  });
-  var draw = new MapboxDraw();
-  maps[id] = map;
-  drawers[id] = draw;
+    var markerActive = false;
 
-  var geocoder = new MapboxGeocoder({
-    accessToken: mapboxgl.accessToken,
-    marker: {
-      color: "orange"
-    },
-    mapboxgl: mapboxgl
-  });
+    var map = new mapboxgl.Map({
+        container: id,
+        style: "mapbox://styles/mapbox/streets-v11",
+        center: [0, 0],
+        zoom: 12
+    });
+    var draw = new MapboxDraw();
+    maps[id] = map;
+    drawers[id] = draw;
 
-  map.addControl(geocoder);
-  map.addControl(draw);
-  setLocation(map);
-  geojson_data = JSON.parse(geojson);
-  draw.set(geojson_data);
-  geojson_data.features.map(feature => {
-    if(feature.geometry.type === "Point"){
-      createMarkerElement(id, feature.geometry.coordinates, feature.properties.name)
-    }
-  })
-  document.querySelector(`#${id}`).querySelector('.mapboxgl-ctrl-geocoder--input').classList.toggle('browser-default');
+    var geocoder = new MapboxGeocoder({
+        accessToken: mapboxgl.accessToken,
+        marker: {
+            color: "orange"
+        },
+        mapboxgl: mapboxgl
+    });
+
+    map.addControl(geocoder);
+    map.addControl(draw);
+
+    var pointElement = document.querySelector('.mapbox-gl-draw_point')
+    pointElement.addEventListener('click', function () {
+        markerActive = true;
+    })
+
+    map.on("click", function (e) {
+        if (markerActive) {
+            coordinates = [e.lngLat.lng, e.lngLat.lat];
+            new mapboxgl.Popup({closeOnClick: true})
+                .setLngLat(coordinates)
+                .setHTML(`
+        <div class="treasure-input">
+          <div class="treasure-form">
+            <div class="input-field">
+              <label for="treasure-input">Nombre del tesoro: </label>
+              <input id="treasure-input" type="text">   
+            </div>
+          </div>
+          <div class="treasure-buttons">
+            <a class="waves-effect waves-light osm-outline-sm" onclick="setMarker('${id}', coordinates)">Crear</a>
+            <a class="waves-effect waves-light osm-outline-sm-red" onclick="closePopup('${id}', coordinates)">Cancelar</a>
+          </div>
+        </div>
+      `)
+                .addTo(map);
+        }
+        markerActive = false;
+    });
+
+    setLocation(map);
+    geojson_data = JSON.parse(geojson);
+    draw.set(geojson_data);
+    geojson_data.features.map(feature => {
+        if (feature.geometry.type === "Point") {
+            createMarkerElement(id, feature.geometry.coordinates, feature.properties.name)
+        }
+    })
+    document.querySelector(`#${id}`).querySelector('.mapboxgl-ctrl-geocoder--input').classList.toggle('browser-default');
 }
 
 /**
@@ -240,67 +272,64 @@ function renderGeoJSON(id, geojson) {
  * @param {*} id
  */
 function createInteractiveMap(id) {
-  mapboxgl.accessToken =
-    "pk.eyJ1IjoiYWx2YXJvZ2Y5NyIsImEiOiJjazMzMG1qdGMwYjMzM25tcTNtNmN5c2RqIn0.pXXfUb1xKca_E8NLPVnyLw";
+    mapboxgl.accessToken =
+        "pk.eyJ1IjoiYWx2YXJvZ2Y5NyIsImEiOiJjazMzMG1qdGMwYjMzM25tcTNtNmN5c2RqIn0.pXXfUb1xKca_E8NLPVnyLw";
 
-  var markerActive = false;
-  var map = new mapboxgl.Map({
-    container: id,
-    style: "mapbox://styles/mapbox/streets-v11",
-    center: [0, 0],
-    zoom: 12
-  });
-  maps[id] = map;
+    var markerActive = false;
+    var map = new mapboxgl.Map({
+        container: id,
+        style: "mapbox://styles/mapbox/streets-v11",
+        center: [0, 0],
+        zoom: 12
+    });
+    maps[id] = map;
 
-  var draw = new MapboxDraw();
-  drawers[id] = draw;
+    var draw = new MapboxDraw();
+    drawers[id] = draw;
 
-  var geocoder = new MapboxGeocoder({
-    accessToken: mapboxgl.accessToken,
-    marker: {
-      image: "../static/img/marker.svg",
-      color: "orange"
-    },
-    mapboxgl: mapboxgl
-  });
+    var geocoder = new MapboxGeocoder({
+        accessToken: mapboxgl.accessToken,
+        marker: {
+            image: "../img/marker.svg",
+            color: "orange"
+        },
+        mapboxgl: mapboxgl
+    });
 
-  map.addControl(geocoder);
-  map.addControl(new mapboxgl.NavigationControl());
-  map.addControl(draw);
+    map.addControl(geocoder);
+    map.addControl(new mapboxgl.NavigationControl());
+    map.addControl(draw);
 
-  var pointElement = document.querySelector('.mapbox-gl-draw_point')
-  pointElement.addEventListener('click', function () {
-    markerActive = true;
-  })
+    var pointElement = document.querySelector('.mapbox-gl-draw_point')
+    pointElement.addEventListener('click', function () {
+        markerActive = true;
+    })
 
-  map.on("click", function (e) {
+    map.on("click", function (e) {
 
-    if (markerActive) {
-      coordinates = [e.lngLat.lng, e.lngLat.lat];
-      new mapboxgl.Popup({ closeOnClick: true })
-      .setLngLat(coordinates)
-      .setHTML(`
-        <div class="treasure-input">
+        if (markerActive) {
+            coordinates = [e.lngLat.lng, e.lngLat.lat];
+            new mapboxgl.Popup({closeOnClick: true})
+                .setLngLat(coordinates)
+                .setHTML(`
+         <div class="treasure-input">
           <div class="treasure-form">
             <div class="input-field">
-              <input id="treasure-input" type="text">
-              <label for="treasure-input">Treasure Name</label>
+              <label for="treasure-input">Nombre del tesoro: </label>
+              <input id="treasure-input" type="text">   
             </div>
           </div>
-          <div class="treasure-error">
-            <p id="treasure-error-msg">Name already set, please change it!</p>
-          </div>
           <div class="treasure-buttons">
-            <a class="waves-effect waves-light osm-outline-sm" onclick="setMarker('${id}', coordinates)">Create</a>
-            <a class="waves-effect waves-light osm-outline-sm-red" onclick="closePopup('${id}', coordinates)">Cancel</a>
+            <a class="waves-effect waves-light osm-outline-sm" onclick="setMarker('${id}', coordinates)">Crear</a>
+            <a class="waves-effect waves-light osm-outline-sm-red" onclick="closePopup('${id}', coordinates)">Cancelar</a>
           </div>
         </div>
       `)
-      .addTo(map);
-    }
-    markerActive = false;
-  });
+                .addTo(map);
+        }
+        markerActive = false;
+    });
 
-  setLocation(map);
-  document.querySelector(`#${id}`).querySelector('.mapboxgl-ctrl-geocoder--input').classList.toggle('browser-default');
+    setLocation(map);
+    document.querySelector(`#${id}`).querySelector('.mapboxgl-ctrl-geocoder--input').classList.toggle('browser-default');
 }

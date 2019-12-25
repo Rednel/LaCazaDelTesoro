@@ -6,6 +6,8 @@ from models.entities.snapshot import Snapshot
 from models.entities.user import User
 from models.entities.participant import Participant
 
+import json
+
 
 def owning_game(element, user):
     return element.owner.key() == user.key()
@@ -110,7 +112,9 @@ def delete_game(game_id=None, user=None):
     if user is not None and game_id is not None:
         game = Game.get(game_id)
         if game.owner.key() == user.key():
-            db.delete(game.treasures)
+            for treasure in game.treasures:
+                db.delete(treasure.images)
+                db.delete(treasure)
             db.delete(game)
 
 
@@ -196,6 +200,48 @@ def exists_game(game=None):
     return Game.get_by_key_name(key_names=game.owner.email + "_" + game.name) is not None
 
 
+def write_game_json(game=None, user=None, map_json=None):
+    """
+    Updates map property in game entity
+    :param game: game to update
+    :param user: user that made the update. Must be the owner of the game
+    :param map_json: json to write in map property of game
+    :return: game updated
+    """
+    if game is not None and user is not None and user.key() == game.owner.key() and map_json is not None:
+        create_treasures_with_json(game=game, user=user, map_json=json.loads(map_json))
+        print(map_json)
+        game.map = json.dumps(map_json)
+        return Game.put(game)
+    else:
+        return None
+
+
+def create_treasures_with_json(game=None, user=None, map_json=None):
+    """
+    Creates treasures and zones using a geo json
+    :param game: game where create treasures
+    :param user: user that creates the treasures. Must be the owner of the game.
+    :param map_json: geo_json that contains map data
+    :return: None
+    """
+
+    if game is not None and map_json is not None and user is not None:
+        delete_all_game_treasures(game=game, user=user)
+        for feature in map_json.get('features'):
+            feature_type = feature.get('geometry').get('type')
+            if feature_type == "Polygon":
+                # TODO sustituir con constructor de zona
+                print("create_zone")
+            elif feature_type == "Point":
+                if feature.get('geometry').get('coordinates') is not None and feature.get('properties').get(
+                        'name') is not None:
+                    latitude = feature.get('geometry').get('coordinates')[0]
+                    longitude = feature.get('geometry').get('coordinates')[1]
+                    name = feature.get('properties').get('name')
+                    create_treasure(game=game, user=user, name=name, lat=latitude, lon=longitude)
+
+
 def create_treasure(game=None, user=None, name=None, lat=None, lon=None, description=None):
     """
     Create and returns a treasure if doesnt exists one in the db with the latitude and longitude provided.
@@ -226,14 +272,14 @@ def get_all_treasures_by_game(game=None):
     return list()
 
 
-def delete_treasure(user=None, treasure=None):
+def delete_all_game_treasures(user=None, game=None):
     """
-    Removes a treasure.
-    :param treasure: treasure to remove
-    :raise: TransactionFailedError: if the data could not be committed.
-    """
-    if user is not None and treasure is not None and user.key() == treasure.game.owner.key():
-        db.delete(treasure)
+        Removes all treasures of the game. The user provided must be owner of the game
+        :param game: game to eliminate treasures
+        :raise: TransactionFailedError: if the data could not be committed.
+        """
+    if user is not None and game is not None and user.key() == game.owner.key():
+        db.delete(game.treasures)
 
 
 def update_treasure(treasure=None):
@@ -292,7 +338,7 @@ def get_snapshot_by_user_treasure_in_base_64(user=None, treasure=None):
     """
     if user is not None and treasure is not None:
         for snapshot in Snapshot.all():
-            if snapshot.treasure.key() == treasure.key() and snapshot.user.key() == user.key():
+            if snapshot.user.key() == user.key() and snapshot.treasure.key() == treasure.key():
                 return snapshot.img.encode('base64')
     return None
 
@@ -306,7 +352,7 @@ def get_snapshot_by_user_treasure(user=None, treasure=None):
     """
     if user is not None and treasure is not None:
         for snapshot in Snapshot.all():
-            if snapshot.treasure.key() == treasure.key() and snapshot.user.key() == user.key():
+            if snapshot.user.key() == user.key() and snapshot.treasure.key() == treasure.key():
                 return snapshot
     return None
 
