@@ -1,6 +1,6 @@
 from flask import render_template, request, Blueprint, redirect, url_for
 import models.facade
-from views.google import login_required
+from views.google_views import login_required
 
 game_view = Blueprint('game_views', __name__)
 
@@ -13,8 +13,9 @@ def show_not_joined_games(user):
 
 
 @game_view.route('/add', methods=['GET'])
-def render_games_form_get():
-    return render_template('new_game_form.html')
+@login_required
+def render_games_form_get(user):
+    return render_template('new_game_form.html', user=user)
 
 
 @game_view.route('/add', methods=['POST'])

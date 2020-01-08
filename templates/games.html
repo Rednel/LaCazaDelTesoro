@@ -1,34 +1,14 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+{% extends 'navbar.html' %}
 
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <script src='https://api.mapbox.com/mapbox-gl-js/v1.4.1/mapbox-gl.js'></script>
-    <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/turf/v3.0.11/turf.min.js'></script>
-    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.9/mapbox-gl-draw.js'></script>
-    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.2/mapbox-gl-geocoder.min.js'></script>
-    <link rel='stylesheet'
-          href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.2/mapbox-gl-geocoder.css'
-          type='text/css'/>
-    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.9/mapbox-gl-draw.css'
-          type='text/css'/>
-    <link href='https://api.mapbox.com/mapbox-gl-js/v1.4.1/mapbox-gl.css' rel='stylesheet'/>
+{% block tittle %} Cazas del tesoro {% endblock %}
 
+{% block content %}
 
-    <title>Cazas del tesoro</title>
-</head>
-<body>
-
-<div class="row">
-    <div class="col">
-        <div class="container">
-            {% if games %}
+<div style="margin-right: 9%; margin-left: 9%">
+    <div class="p-5 bg-white rounded box-shadow align-content-center">
+        <div class="row">
+            <div class="col">
+                {% if games %}
                 <table class="table">
                     <thead>
                     <th>Nombre del juego</th>
@@ -39,67 +19,67 @@
                     </thead>
                     <tbody>
                     {% for game in games %}
-                        <tr>
-                            <td>{{ game.name }}</td>
-                            <td>{{ game.owner.email }}</td>
-                            <td>{{ game.participants.count() }}</td>
-                            {% if game.is_active %}
-                                <td>&#x2716;</td>
-                                <td>Aún no hay ning&uacute;n ganador</td>
+                    <tr>
+                        <td>{{ game.name }}</td>
+                        <td>{{ game.owner.email }}</td>
+                        <td>{{ game.participants.count() }}</td>
+                        {% if game.is_active %}
+                        <td>&#x2716;</td>
+                        <td>Aún no hay ning&uacute;n ganador</td>
+                        {% else %}
+                        <td>&#x2714;</td>
+                        <td>{{ game.winner.email }}</td>
+                        {% endif %}
+
+                        <td>
+                            {% if game.owner.key() == user.key() %}
+                            <a class="btn btn-primary"
+                               href="/games/treasures?game_id={{ game.key() }}">
+                                Editar caza
+                            </a>
+                            {% elif not is_user_joined %}
+                            <a class="btn btn-primary"
+                               href="/games/join?game_id={{ game.key() }}">
+                                Unirse a la caza
+                            </a>
+                            {% elif is_user_joined and game.is_active %}
+                            <a class="btn btn-primary"
+                               href="/games/treasures?game_id={{ game.key() }}">
+                                Abrir caza
+                            </a>
                             {% else %}
-                                <td>&#x2714;</td>
-                                <td>{{ game.winner.email }}</td>
+                            <a class="btn btn-primary"
+                               href="/games/win?game_id={{ game.key() }}">
+                                Abrir caza completada
+                            </a>
                             {% endif %}
 
-                            <td>
-                                {% if game.owner.key() == user.key() %}
-                                    <a class="btn btn-primary"
-                                       href="/games/treasures?game_id={{ game.key() }}">
-                                        Editar caza
-                                    </a>
-                                {% elif not is_user_joined %}
-                                    <a class="btn btn-primary"
-                                       href="/games/join?game_id={{ game.key() }}">
-                                        Unirse a la caza
-                                    </a>
-                                {% elif is_user_joined and game.is_active %}
-                                    <a class="btn btn-primary"
-                                       href="/games/treasures?game_id={{ game.key() }}">
-                                        Abrir caza
-                                    </a>
-                                {% else %}
-                                    <a class="btn btn-primary"
-                                       href="/games/win?game_id={{ game.key() }}">
-                                        Abrir caza completada
-                                    </a>
-                                {% endif %}
+                        </td>
 
-                            </td>
-
-                            {% if is_user_joined %}
-                                <td>
-                                    <a class="btn btn-danger"
-                                       href="/games/unjoin?game_id={{ game.key() }}">
-                                        Abandonar la caza
-                                        <span style="margin-left: 5px;" class="glyphicon glyphicon-list-alt"
-                                              aria-hidden="true"></span>
-                                    </a>
-                                </td>
-                            {% elif game.owner.key() == user.key() %}
-                                <td>
-                                    <a class="btn btn-danger"
-                                       href="/games/remove?game_id={{ game.key() }}">
-                                        Eliminar la caza
-                                        <span style="margin-left: 5px;" class="glyphicon glyphicon-list-alt"
-                                              aria-hidden="true"></span>
-                                    </a>
-                                </td>
-                            {% endif %}
-                        </tr>
+                        {% if is_user_joined %}
+                        <td>
+                            <a class="btn btn-danger"
+                               href="/games/unjoin?game_id={{ game.key() }}">
+                                Abandonar la caza
+                                <span style="margin-left: 5px;" class="glyphicon glyphicon-list-alt"
+                                      aria-hidden="true"></span>
+                            </a>
+                        </td>
+                        {% elif game.owner.key() == user.key() %}
+                        <td>
+                            <a class="btn btn-danger"
+                               href="/games/remove?game_id={{ game.key() }}">
+                                Eliminar la caza
+                                <span style="margin-left: 5px;" class="glyphicon glyphicon-list-alt"
+                                      aria-hidden="true"></span>
+                            </a>
+                        </td>
+                        {% endif %}
+                    </tr>
                     {% endfor %}
                     </tbody>
                 </table>
-            {% else %}
+                {% else %}
                 <div class="row">
                     <div class="col text-center">
                         <div class="col bg-info warning_mesagge">
@@ -108,37 +88,21 @@
                     </div>
                 </div>
 
-            {% endif %}
+                {% endif %}
 
-            <p></p>
-            <p></p>
+                <p></p>
+                <p></p>
 
-            <a class="btn btn-primary align-right"
-               href="/games/add">
-                Crear juego
-            </a>
+                <a class="btn btn-primary align-right"
+                   href="/games/add">
+                    Crear juego
+                </a>
 
-            <a class="btn btn-primary align-right"
-               href="/">
-                Página principal
-            </a>
+
+            </div>
 
         </div>
     </div>
-
-
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-            crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-            crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-            crossorigin="anonymous"></script>
-    <!-- <script createInteractiveMap("interactive-map")></script>-->
 </div>
-</body>
-</html>
+
+{% endblock %}

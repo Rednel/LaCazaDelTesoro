@@ -74,4 +74,3 @@ def get_user(function):
         except KeyError:
             return function(*args, **kwargs)
     return wrap
-
