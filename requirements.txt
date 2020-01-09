@@ -1,4 +1,9 @@
-webapp2
+requests
+oauthlib
+Flask==1.1.1
+Werkzeug==0.16.0
 google
-flask
-jinja2
+flask_dance
+requests-toolbelt
+twitter
+facebook-sdk

@@ -1,0 +1,17 @@
+{% extends 'navbar.html' %}
+
+{% block content %}
+    {% if user is none %}
+        <div>
+            <h3 class="text-centered">¡¡SAL A EXPLORAR EL MUNDO, ENCUENTRA TESOROS Y CONSIGUE PREMIOS!!
+            </h3>
+            <h4 class="text-centered">¡ÚNETE AHORA MISMO CON TU CUENTA DE GOOGLE!
+            </h4>
+        </div>
+        <form class="form-signin" action="/google/login">
+            <button class="btn btn-lg btn-google btn-block text-uppercase" type="submit"><i
+                    class="fab fa-google mr-2"></i> Sign in with Google
+            </button>
+        </form>
+    {% endif %}
+{% endblock %}
