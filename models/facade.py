@@ -1,8 +1,8 @@
 from google.appengine.ext import db
 
-from models.entities.game import Game
 from models.entities.treasure import Treasure
 from models.entities.snapshot import Snapshot
+from models.entities.game import Game
 from models.entities.user import User
 from models.entities.participant import Participant
 
@@ -187,6 +187,19 @@ def get_game_by_owner_and_name(owner=None, game_name=None):
     return Game.get_by_key_name(key_names=owner.email + "_" + game_name)
 
 
+def get_game_by_id(_id=None):
+    """Get the game from db with the id provided
+        Args:
+            :param _id: The id of the game to search in db
+                :type: Game
+        Returns:
+            Game: The game if it is already stored, None in other case
+    """
+    if _id is None:
+        return None
+    return Game.get_by_id(ids=_id)
+
+
 def exists_game(game=None):
     """Get a boolean value corresponding with the evidence of an existing game provided in db
         Args:
@@ -216,6 +229,98 @@ def write_game_json(game=None, user=None, map_json=None):
     else:
         return None
 
+def set_user_twitter_tag(user, tag):
+    user.twitter_tag = tag
+    user.put()
+
+
+def delete_twitter_tag(user):
+    user.twitter_tag = None
+    user.put()
+
+
+def set_user_facebook_tag(user, tag, _id):
+    user.facebook_tag = tag
+    user.facebook_tag_id = _id
+    user.put()
+
+
+def delete_facebook_tag(user):
+    user.facebook_tag = None
+    user.facebook_tag_id = None
+    user.put()
+
+
+def get_all_treasures_by_game(game=None):
+    """
+    :param game(Game): game owner of the treasures
+    :return: all treasures in the database
+    """
+    if game is not None:
+        return game.treasures
+    return list()
+
+
+def get_snapshots_by_game(owner=None, game=None):
+    """
+    Returns participant, images tuples based in a game
+    :param game: Game that contains the snapshots
+    :param owner: Owner of the game that is the only that can have access to the information
+    :return: participant, images tuples in case that all parameters are provided. Otherwise its returns a None
+    """
+    result = list()
+    if owner is not None and game is not None and owner.key() == game.owner.key():
+        for participant in game.participants:
+            images = len(filter(lambda image: image.treasure in game.treasures, participant.user.images))
+            result.append((participant.user, images))
+    return result
+
+
+def get_snapshots_by_game_and_user(owner=None, game=None, user=None):
+    """
+    Returns snapshot list based in a user and game
+    :param game: Game that contains the snapshots
+    :param owner: Owner of the game that is the only that can have access to the information
+    :param user: User provided to filter snapshots
+    :return: snapshot list in case that all parameters are provided. Otherwise its returns a None
+    """
+    result = list()
+    if owner is not None and game is not None and owner.key() == game.owner.key() and user is not None and game in get_active_games_by_user(
+            user=user):
+        images = filter(lambda image: image.treasure in game.treasures, user.images)
+        for image in images:
+            result.append((image, image.img.encode('base64')))
+    return result
+
+
+def get_all_user():
+    return User.all()
+
+
+def get_user_by_user_id(user_id=None):
+    """
+    Returns a user based in a user_id
+    :param user_id: Id of the user to return
+    :return: User in case that all parameters are provided. Otherwise its returns a None
+    """
+    if user_id is not None:
+        return User.get(user_id)
+    return list()
+
+
+def get_snapshot_by_user_treasure_in_base_64(user=None, treasure=None):
+    """
+    Returns a snapshot based in a user and treasure in base 64
+    :param user: User that made the snapshot
+    :param treasure: Treasure related with the snapshot
+    :return: Snapshot in case that all parameters are provided. Otherwise its returns a None
+    """
+    if user is not None and treasure is not None:
+        for snapshot in Snapshot.all():
+            if snapshot.treasure.key() == treasure.key() and snapshot.user.key() == user.key():
+                return snapshot.img.encode('base64')
+    return None
+
 
 def create_treasures_with_json(game=None, user=None, map_json=None):
     """
@@ -225,6 +330,18 @@ def create_treasures_with_json(game=None, user=None, map_json=None):
     :param map_json: geo_json that contains map data
     :return: None
     """
+def get_snapshot_by_user_treasure(user=None, treasure=None):
+    """
+    Returns a snapshot based in a user and treasure
+    :param user: User that made the snapshot
+    :param treasure: Treasure related with the snapshot
+    :return: Snapshot in case that all parameters are provided. Otherwise its returns a None
+    """
+    if user is not None and treasure is not None:
+        for snapshot in Snapshot.all():
+            if snapshot.treasure.key() == treasure.key() and snapshot.user.key() == user.key():
+                return snapshot
+    return None
 
     if game is not None and map_json is not None and user is not None:
         delete_all_game_treasures(game=game, user=user)
@@ -241,6 +358,8 @@ def create_treasures_with_json(game=None, user=None, map_json=None):
                     name = feature.get('properties').get('name')
                     create_treasure(game=game, user=user, name=name, lat=latitude, lon=longitude)
 
+
+def create_treasure(game=None, user=None, name=None, lat=None, lon=None, description=None):
 
 def create_treasure(game=None, user=None, name=None, lat=None, lon=None, description=None):
     """
@@ -409,3 +528,15 @@ def get_or_insert_user(email=None, name=None, surname="", picture=None):
         return None
     user = User.get_or_insert(key_name=email, email=email, name=name, surname=surname, picture=picture)
     return user
+
+
+def delete_snapshot(user=None, treasure=None):
+    """
+    Removes a snapshot.
+    :param user: User that made the snapshot
+    :param treasure: Treasure related with the snapshot to delete
+    :raise: TransactionFailedError: if the data could not be committed.
+    """
+    if user is not None and treasure is not None:
+        snapshot = get_snapshot_by_user_treasure(user=user, treasure=treasure)
+        db.delete(snapshot)

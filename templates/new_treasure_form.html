@@ -1,91 +1,60 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+{% extends 'navbar.html' %}
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <script src='https://api.mapbox.com/mapbox-gl-js/v1.4.1/mapbox-gl.js'></script>
-    <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/turf/v3.0.11/turf.min.js'></script>
-    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.9/mapbox-gl-draw.js'></script>
-    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.2/mapbox-gl-geocoder.min.js'></script>
-    <link rel='stylesheet'
-          href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.2/mapbox-gl-geocoder.css'
-          type='text/css'/>
-    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.9/mapbox-gl-draw.css'
-          type='text/css'/>
-    <script src='/static/js/map.js'></script>
-    <link href='https://api.mapbox.com/mapbox-gl-js/v1.4.1/mapbox-gl.css' rel='stylesheet'/>
+{% block tittle %} Formulario tesoro {% endblock %}
 
-    <title>Formulario tesoro</title>
-</head>
-<body>
+{% block content %}
+<div style="margin-right: 9%; margin-left: 9%;">
+    <div class="p-5 bg-white rounded box-shadow align-content-center">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <h1>Nuevo tesoro capitán<span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span></h1>
+            </div>
+        </div>
+        <br/>
+        <br/>
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8 align-content-center">
+                <form class="form-horizontal" style="margin: auto" role="form" action="" method="post">
+                    <div class="form-group">
+                        <label for="inputName" class="col-sm-3 control-label">Nombre</label>
 
-<div class="row">
-    <div class="col-lg-12 text-center">
-        <h1>Nuevo tesoro capitán<span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span></h1>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" name="inputName" id="inputName"
+                                   placeholder="Nombre del tesoro a cazar">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputLatitude" class="col-sm-3 control-label">Latitud</label>
+
+                        <div class="col-sm-6">
+                            <input type="number" class="form-control" name="inputLatitude" id="inputLatitude"
+                                   placeholder="Latitud del tesoro en el mapa pirata">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputLongitude" class="col-sm-3 control-label">Longitud</label>
+
+                        <div class="col-sm-6">
+                            <input type="number" class="form-control" name="inputLongitude" id="inputLongitude"
+                                   placeholder="Longitud del tesoro en el mapa pirata">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputDescription" class="col-sm-3 control-label">Descripci&oacute;n</label>
+
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" name="inputDescription" id="inputDescription"
+                                   placeholder="Escriba la descripci&oacute;n del tesoro (opcional)">
+                        </div>
+                    </div>
+                    <div class="form-group text-center">
+                        <button type="submit" value="submit" class="btn btn-success">Crear y enterrar</button>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
     </div>
 </div>
-<br/>
-<br/>
-<div class="row">
-    <div class="col-md-2"></div>
-    <div class="col-md-8">
-        <form class="form-horizontal" role="form" action="" method="post">
-            <div class="form-group">
-                <label for="inputName" class="col-sm-3 control-label">Nombre</label>
-
-                <div class="col-sm-6">
-                    <input type="text" class="form-control" name="inputName" id="inputName"
-                           placeholder="Nombre del tesoro a cazar">
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="inputLatitude" class="col-sm-3 control-label">Latitud</label>
-
-                <div class="col-sm-6">
-                    <input type="number" class="form-control" name="inputLatitude" id="inputLatitude"
-                           placeholder="Latitud del tesoro en el mapa pirata">
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="inputLongitude" class="col-sm-3 control-label">Longitud</label>
-
-                <div class="col-sm-6">
-                    <input type="number" class="form-control" name="inputLongitude" id="inputLongitude"
-                           placeholder="Longitud del tesoro en el mapa pirata">
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="inputDescription" class="col-sm-3 control-label">Descripci&oacute;n</label>
-
-                <div class="col-sm-6">
-                    <input type="text" class="form-control" name="inputDescription" id="inputDescription"
-                           placeholder="Escriba la descripci&oacute;n del tesoro (opcional)">
-                </div>
-            </div>
-            <div class="form-group text-center">
-                <button type="submit" value="submit" class="btn btn-success">Crear y enterrar</button>
-            </div>
-        </form>
-    </div>
-    <div class="col-md-2"></div>
-</div>
-
-<!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-            crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-            crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-            crossorigin="anonymous"></script>
-
-</body>
-</html>
+{% endblock %}

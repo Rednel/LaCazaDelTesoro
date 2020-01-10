@@ -203,25 +203,23 @@ function renderGeoJSON(id, geojson) {
     mapboxgl.accessToken =
         "pk.eyJ1IjoiYWx2YXJvZ2Y5NyIsImEiOiJjazMzMG1qdGMwYjMzM25tcTNtNmN5c2RqIn0.pXXfUb1xKca_E8NLPVnyLw";
 
-    var markerActive = false;
+  var map = new mapboxgl.Map({
+    container: id,
+    style: "mapbox://styles/mapbox/streets-v11",
+    center: [0, 0],
+    zoom: 12
+  });
+  var draw = new MapboxDraw();
+  maps[id] = map;
+  drawers[id] = draw;
 
-    var map = new mapboxgl.Map({
-        container: id,
-        style: "mapbox://styles/mapbox/streets-v11",
-        center: [0, 0],
-        zoom: 12
-    });
-    var draw = new MapboxDraw();
-    maps[id] = map;
-    drawers[id] = draw;
-
-    var geocoder = new MapboxGeocoder({
-        accessToken: mapboxgl.accessToken,
-        marker: {
-            color: "orange"
-        },
-        mapboxgl: mapboxgl
-    });
+  var geocoder = new MapboxGeocoder({
+    accessToken: mapboxgl.accessToken,
+    marker: {
+      color: "orange"
+    },
+    mapboxgl: mapboxgl
+  });
 
     map.addControl(geocoder);
     map.addControl(draw);

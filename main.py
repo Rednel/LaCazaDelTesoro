@@ -1,15 +1,18 @@
-from flask import Flask, render_template, redirect, request
+from flask import Flask, render_template, redirect, request, session
 from google.appengine.ext import db
 import os
-from views.google import google_bp, login_required
+from views.google_views import google_bp, login_required, get_user
 import requests_toolbelt.adapters.appengine
 from models.entities.user import User
 from models.entities.conversation import Conversation
 from models.entities.messages import Message
 import time
-from views.google import google_view
+from views.google_views import google_view
 from views.treasure import treasure_view
 from views.game import game_view
+from views.twitter_views import twitter_view, twitter_bp
+from views.facebook_views import facebook_view, facebook_bp
+from views.profile import profile_view
 
 # Patch to fix AppEngine
 requests_toolbelt.adapters.appengine.monkeypatch()
@@ -17,11 +20,15 @@ requests_toolbelt.adapters.appengine.monkeypatch()
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
 
-UPLOAD_FOLDER = '/path/to/the/uploads'
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
 app.register_blueprint(google_bp, url_prefix="/")
+app.register_blueprint(twitter_bp, url_prefix="/")
+app.register_blueprint(facebook_bp, url_prefix="/")
 app.register_blueprint(google_view, url_prefix="/google")
+app.register_blueprint(treasure_view, url_prefix="/games/treasures")
+app.register_blueprint(game_view, url_prefix="/games")
+app.register_blueprint(twitter_view, url_prefix="/twitter")
+app.register_blueprint(facebook_view, url_prefix="/facebook")
+app.register_blueprint(profile_view, url_prefix="/profile")
 app.register_blueprint(treasure_view, url_prefix="/games/treasures")
 app.register_blueprint(game_view, url_prefix="/games")
 

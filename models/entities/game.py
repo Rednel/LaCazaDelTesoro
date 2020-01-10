@@ -1,6 +1,7 @@
 from google.appengine.ext import db
 from models.entities.user import User
 from models.entities.zone import Zone
+# from models.entities.treasure import Treasure
 
 
 class Game(db.Model):
