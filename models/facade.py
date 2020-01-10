@@ -4,7 +4,67 @@ from models.entities.treasure import Treasure
 from models.entities.snapshot import Snapshot
 from models.entities.game import Game
 from models.entities.user import User
-from models.entities.zone import Zone
+from models.entities.participant import Participant
+
+
+def owning_game(element, user):
+    return element.owner.key() == user.key()
+
+
+def get_created_games_by_user(user=None):
+    """
+    :return: all games in the database that were created by the provided user
+    """
+    if user is not None:
+        return filter(lambda x: owning_game(element=x, user=user), Game.all())
+    return list()
+
+
+def get_active_games_by_user(user=None):
+    """
+    :return: all games in the database that are associated to the user and are not completed yet
+    """
+    if user is not None:
+        result = list()
+        for participant in Participant.all():
+            if participant.user.key() == user.key() and participant.game.is_active:
+                result.append(participant.game)
+        return result
+    return list()
+
+
+def get_completed_games_by_user(user=None):
+    """
+    :return: all games in the database that are associated to the user and are already completed
+    """
+    if user is not None:
+        result = list()
+        for participant in Participant.all():
+            if participant.user.key() == user.key() and not participant.game.is_active:
+                result.append(participant.game)
+        return result
+    return list()
+
+
+def get_games_not_joined_by_user(user=None):
+    """
+    :return: all games in the database that are actives and the user hasn't joined yet
+    """
+    if user is not None:
+        result = list()
+        for game in Game.all():
+            if game not in get_active_games_by_user(user=user) and game not in get_created_games_by_user(
+                    user=user) and game not in get_completed_games_by_user(user=user):
+                result.append(game)
+        return result
+    return list()
+
+
+def get_or_insert_user(email=None, name=None, surname="", picture=None):
+    if name is None or email is None or picture is None:
+        return None
+    user = User.get_or_insert(key_name=email, email=email, name=name, surname=surname, picture=picture)
+    return user
 
 
 def get_or_insert_game(zone=None, treasures=None, owner=None, name=None, is_active=True):
@@ -33,14 +93,26 @@ def get_or_insert_game(zone=None, treasures=None, owner=None, name=None, is_acti
     return game
 
 
-def delete_game(game=None):
-    """Delete the game from db
+def get_game_by_id(game_id=None):
+    """
+    :return: Game by id
+    """
+    if game_id is not None:
+        return Game.get(game_id)
+    return list()
 
+
+def delete_game(game_id=None, user=None):
+    """Delete the game from db
         Args:
-            :param game: The game which is going to be deleted from db
+            :param game_id: The game id which is going to be deleted from db
                 :type: Game
     """
-    db.delete(game)
+    if user is not None and game_id is not None:
+        game = Game.get(game_id)
+        if game.owner.key() == user.key():
+            db.delete(game.treasures)
+            db.delete(game)
 
 
 def get_game_by_owner_and_name(owner=None, game_name=None):
@@ -56,17 +128,58 @@ def get_game_by_owner_and_name(owner=None, game_name=None):
     return Game.get_by_key_name(key_names=owner.email + "_" + game_name)
 
 
-def get_game_by_id(_id=None):
-    """Get the game from db with the id provided
-        Args:
-            :param _id: The id of the game to search in db
-                :type: Game
-        Returns:
-            Game: The game if it is already stored, None in other case
+def join_game(game_id=None, user=None):
     """
-    if _id is None:
-        return None
-    return Game.get_by_id(ids=_id)
+    :param game_id: idof the game that user joins
+    :param user: user what joins the game
+    """
+
+    if user is not None and game_id is not None:
+        game = Game.get(game_id)
+        Participant.get_or_insert(key_name=user.email + "_" + game_id, game=game, user=user)
+
+
+def unjoin_game(game_id=None, user=None):
+    """
+    :param game_id: id of the game that user joins
+    :param user: user what joins the game
+    """
+
+    if user is not None and game_id is not None:
+        game = get_game_by_id(game_id)
+        for treasure in game.treasures:
+            delete_snapshot(user=user, treasure=treasure)
+        participant = Participant.get_or_insert(key_name=user.email + "_" + game_id)
+        db.delete(participant)
+
+
+def win_game(game=None, winner=None, owner=None):
+    """
+    Makes winner user win the game
+    :param game: game that winner won
+    :param winner: winner of the game
+    :param owner: owner of the game
+    """
+    if game is not None and winner is not None and owner is not None and game.owner.key() == owner.key():
+        game.winner = winner
+        game.is_active = False
+        Game.save(game)
+
+
+def reopen_game(game=None, user=None):
+    """
+    Removes game winner and reopens the game
+    :param game_id: id of the game to reopen
+    :param user: user that reopens the game, must be the owner of the game
+    """
+
+    if game is not None and user is not None and game.owner.key() == user.key():
+        game.winner = None
+        game.is_active = True
+        for treasure in game.treasures:
+            for image in treasure.images:
+                Snapshot.delete(image)
+        Game.save(game)
 
 
 def exists_game(game=None):
@@ -80,10 +193,6 @@ def exists_game(game=None):
     if game is None or game.name is None or game.owner is None or game.owner.email is None:
         return False
     return Game.get_by_key_name(key_names=game.owner.email + "_" + game.name) is not None
-
-
-def get_all_user():
-    return User.all()
 
 
 def set_user_twitter_tag(user, tag):
@@ -108,27 +217,136 @@ def delete_facebook_tag(user):
     user.put()
 
 
-def get_or_insert_user(email=None, name=None, surname="", picture=None):
-    if name is None or email is None or picture is None:
-        return None
-    user = User.get_or_insert(key_name=email, email=email, name=name, surname=surname, picture=picture)
-    return user
+def get_all_treasures_by_game(game=None):
+    """
+    :param game(Game): game owner of the treasures
+    :return: all treasures in the database
+    """
+    if game is not None:
+        return game.treasures
+    return list()
 
 
-def create_treasure(lat=None, lon=None, text=None, game=None):
+def get_snapshots_by_game(owner=None, game=None):
+    """
+    Returns participant, images tuples based in a game
+    :param game: Game that contains the snapshots
+    :param owner: Owner of the game that is the only that can have access to the information
+    :return: participant, images tuples in case that all parameters are provided. Otherwise its returns a None
+    """
+    result = list()
+    if owner is not None and game is not None and owner.key() == game.owner.key():
+        for participant in game.participants:
+            images = len(filter(lambda image: image.treasure in game.treasures, participant.user.images))
+            result.append((participant.user, images))
+    return result
+
+
+def get_snapshots_by_game_and_user(owner=None, game=None, user=None):
+    """
+    Returns snapshot list based in a user and game
+    :param game: Game that contains the snapshots
+    :param owner: Owner of the game that is the only that can have access to the information
+    :param user: User provided to filter snapshots
+    :return: snapshot list in case that all parameters are provided. Otherwise its returns a None
+    """
+    result = list()
+    if owner is not None and game is not None and owner.key() == game.owner.key() and user is not None and game in get_active_games_by_user(
+            user=user):
+        images = filter(lambda image: image.treasure in game.treasures, user.images)
+        for image in images:
+            result.append((image, image.img.encode('base64')))
+    return result
+
+
+def get_all_user():
+    return User.all()
+
+
+def get_user_by_user_id(user_id=None):
+    """
+    Returns a user based in a user_id
+    :param user_id: Id of the user to return
+    :return: User in case that all parameters are provided. Otherwise its returns a None
+    """
+    if user_id is not None:
+        return User.get(user_id)
+    return list()
+
+
+def get_snapshot_by_user_treasure_in_base_64(user=None, treasure=None):
+    """
+    Returns a snapshot based in a user and treasure in base 64
+    :param user: User that made the snapshot
+    :param treasure: Treasure related with the snapshot
+    :return: Snapshot in case that all parameters are provided. Otherwise its returns a None
+    """
+    if user is not None and treasure is not None:
+        for snapshot in Snapshot.all():
+            if snapshot.treasure.key() == treasure.key() and snapshot.user.key() == user.key():
+                return snapshot.img.encode('base64')
+    return None
+
+
+def get_snapshot_by_user_treasure(user=None, treasure=None):
+    """
+    Returns a snapshot based in a user and treasure
+    :param user: User that made the snapshot
+    :param treasure: Treasure related with the snapshot
+    :return: Snapshot in case that all parameters are provided. Otherwise its returns a None
+    """
+    if user is not None and treasure is not None:
+        for snapshot in Snapshot.all():
+            if snapshot.treasure.key() == treasure.key() and snapshot.user.key() == user.key():
+                return snapshot
+    return None
+
+
+def create_treasure(game=None, user=None, name=None, lat=None, lon=None, description=None):
     """
     Create and returns a treasure if doesnt exists one in the db with the latitude and longitude provided.
     If it exists just returns the treasure.
-    :param lat(double): lattitude
+    :param name(string): treasure name
+    :param lat(double): latitude
     :param lon(double): longitude
-    :param text(string): treasure description, optional
+    :param description(string): treasure description, optional
     :param game(Game): game owner of the treasure
     :return: Treasure
     """
-    if lat is not None and lon is not None:
-        return Treasure.get_or_insert(key_name=lat + '_' + lon, lat=lat, lon=lon, text=text, game=game)
+    if name is not None and lat is not None and lon is not None and user is not None and user.key() == game.owner.key():
+        return Treasure.get_or_insert(key_name=name + '_' + str(lat) + '_' + str(lon), lat=lat, lon=lon,
+                                      name=name,
+                                      description=description,
+                                      game=game)
     else:
         return None
+
+
+def delete_treasure(user=None, treasure=None):
+    """
+    Removes a treasure.
+    :param treasure: treasure to remove
+    :raise: TransactionFailedError: if the data could not be committed.
+    """
+    if user is not None and treasure is not None and user.key() == treasure.game.owner.key():
+        db.delete(treasure)
+
+
+def update_treasure(treasure=None):
+    """
+    Updates a treasure
+    :param treasure(Treasure): treasure to update
+    """
+    Treasure.save(treasure)
+
+
+def get_treasure_by_id(treasure_id=None):
+    """
+    Gets treasure related with provided id
+    :param treasure_id(String): id of the treasure to get
+    :return treasure(Treasure)
+    """
+    return Treasure.get(treasure_id)
 
 
 def remove_treasure(treasure=None):
@@ -140,14 +358,6 @@ def remove_treasure(treasure=None):
     db.delete(treasure)
 
 
-def update_treasure(treasure=None):
-    """
-    Updates a treasure
-    :param treasure(Treasure): treasure to update
-    """
-    Treasure.save(treasure)
-
-
 def create_snapshot(user=None, treasure=None, img=None):
     """
     Creates a new snapshot based in a user, treasure and image
@@ -157,8 +367,7 @@ def create_snapshot(user=None, treasure=None, img=None):
     :return: Snapshot in case that all parameters are provided. Otherwise its returns a None
     """
     if user is not None and treasure is not None and img is not None:
-        return Snapshot.get_or_insert(key_name=user.email + '_' + treasure.lat + '_' + treasure.lon, user=user,
-                                      treasure=treasure, img=img)
+        return Snapshot.get_or_insert(key_name=user.email + '_' + treasure.lat + '_' + treasure.lon, user=user, treasure=treasure, img=img)
     else:
         return None
 
@@ -180,99 +389,13 @@ def update_snapshot(snapshot=None):
     Snapshot.save(snapshot)
 
 
-""" 
-CRUD User       
-"""
-
-
-def user_all():
-    data = User.all()
-    return data
-
-
-#  get user info
-def get_user_one(id):
-    user = db.get(db.Key.from_path('User', id))
-    return user
-
-
-#  new user
-def insert_user_new(email, name, surname, picture):
-    user = User(
-        email=str(email),
-        name=str(name),
-        surname=str(surname),
-        picture=str(picture),
-    )
-    user.put()
-
-
-def user_update_model(id, name, email, surname, picture):
-    user_id = int(id)
-    user = db.get(db.Key.from_path('User', user_id))
-    user.email = email
-    user.name = name
-    user.surname = surname
-    user.picture = picture
-    user.put()
-
-#  delete user
-def user_delete_model(id):
-    if id:
-        user = db.get(db.Key.from_path('User', id))
-        db.delete(user)
-
-
-""" 
-CRUD Zone       
-"""
-
-# zone list
-def get_zone_all():
-    data = Zone.all()
-    return data
-
-#  get zona info
-def zone_one_model(id):
-    zone = db.get(db.Key.from_path('Zone', id))
-    return zone
-
-#  new zone
-def insert_zone_new(name, latitude, longitude, height, width):
-        zone = Zone(
-            name=name,
-            latitude=latitude,
-            longitude=longitude,
-            height=height,
-            width=width,
-        )
-        zone.put()
-
-#  delete edit
-def zone_edit_model(id, name, latitude, longitude, height, width):
-        zone_id = int(id)
-        zone = db.get(db.Key.from_path('Zone', zone_id))
-        zone.name = name
-        zone.latitude = latitude
-        zone.longitude = longitude
-        zone.height = height
-        zone.width = width
-        zone.put()
-
-#  delete zone
-def zone_delete_model(id):
-    if id:
-        zone = db.get(db.Key.from_path('Zone', id))
-        db.delete(zone)
-
-
-"""
-SEARCH FOR GAME
-"""
-
-def game_search(keyword):
-    if keyword:
-        keyword = str(keyword)
-        q = Game.all()
-        result = q.filter("game_name =", keyword)
-        return render_template('game_search.html', data=result)
+def delete_snapshot(user=None, treasure=None):
+    """
+    Removes a snapshot.
+    :param user: User that made the snapshot
+    :param treasure: Treasure related with the snapshot to delete
+    :raise: TransactionFailedError: if the data could not be committed.
+    """
+    if user is not None and treasure is not None:
+        snapshot = get_snapshot_by_user_treasure(user=user, treasure=treasure)
+        db.delete(snapshot)

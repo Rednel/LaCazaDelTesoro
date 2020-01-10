@@ -1,8 +1,13 @@
 from google.appengine.ext import db
 from models.entities.game import Game
 
+
 class Treasure(db.Model):
-    lat = db.IntegerProperty(required=True)
-    lon = db.IntegerProperty(required=True)
+    name = db.StringProperty(required=True)
+    lat = db.FloatProperty(required=True)
+    lon = db.FloatProperty(required=True)
     description = db.StringProperty(default="")
-    game = db.ReferenceProperty(Game, collection_name="treasures", required=True)
+    game = db.ReferenceProperty(Game, collection_name="treasures")
+
+    def __eq__(self, other):
+        return isinstance(other, Treasure) and other.key() == self.key()

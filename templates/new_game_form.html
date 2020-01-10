@@ -1,0 +1,35 @@
+{% extends 'navbar.html' %}
+
+{% block tittle %}Formulario caza del tesoro{% endblock %}
+
+{% block content %}
+<div style="margin-right: 9%; margin-left: 9%">
+    <div class="p-5 bg-white rounded box-shadow align-content-center">
+        <div class="text-center">
+            <h1>Nueva aventura<span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span></h1>
+        </div>
+        <br/>
+        <br/>
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <form class="form-horizontal text-center" role="form" action="" method="post">
+                    <div class="form-group d-flex justify-content-center">
+                        <label for="inputLatitude" class="col-sm-3 control-label">Nombre de la partida</label>
+
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" name="inputGameName" id="inputGameName"
+                                   placeholder="Nombre de la aventura">
+                        </div>
+                    </div>
+                    <div class="form-group d-flex justify-content-center">
+                        <button type="submit" value="submit" class="btn btn-success mt-4">Crear y zarpar a la aventura
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}

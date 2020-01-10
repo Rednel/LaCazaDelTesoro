@@ -1,0 +1,25 @@
+{% extends 'navbar.html' %}
+
+{% block tittle %} Ganador de {{ game.name }} {% endblock %}
+
+{% block content %}
+<div style="margin-right: 9%; margin-left: 9%;">
+    <div class="p-5 bg-white rounded box-shadow align-content-center">
+        <h1>WINNER WINNER CHICKEN DINNER</h1>
+
+        <h2>Enhorabuena al mejor pirata de la caza: {{ game.winner.email }}</h2>
+        <h3>El cual ha cazado ni m&aacute;s ni menos que {{ game.treasures.count() }} tesoros. </h3>
+        <br/>
+        <a class="btn btn-primary align-right"
+           href="/games">
+            Otros juegos
+        </a>
+        {% if user.key() == game.owner.key() %}
+        <a class="btn btn-primary align-right"
+           href="/games/reopen?game_id={{ game.key() }}">
+            Reabrir juego
+        </a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

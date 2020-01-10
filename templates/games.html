@@ -1,0 +1,108 @@
+{% extends 'navbar.html' %}
+
+{% block tittle %} Cazas del tesoro {% endblock %}
+
+{% block content %}
+
+<div style="margin-right: 9%; margin-left: 9%">
+    <div class="p-5 bg-white rounded box-shadow align-content-center">
+        <div class="row">
+            <div class="col">
+                {% if games %}
+                <table class="table">
+                    <thead>
+                    <th>Nombre del juego</th>
+                    <th>Creador</th>
+                    <th>Número de participantes</th>
+                    <th>Completada</th>
+                    <th>Ganador</th>
+                    </thead>
+                    <tbody>
+                    {% for game in games %}
+                    <tr>
+                        <td>{{ game.name }}</td>
+                        <td>{{ game.owner.email }}</td>
+                        <td>{{ game.participants.count() }}</td>
+                        {% if game.is_active %}
+                        <td>&#x2716;</td>
+                        <td>Aún no hay ning&uacute;n ganador</td>
+                        {% else %}
+                        <td>&#x2714;</td>
+                        <td>{{ game.winner.email }}</td>
+                        {% endif %}
+
+                        <td>
+                            {% if game.owner.key() == user.key() %}
+                            <a class="btn btn-primary"
+                               href="/games/treasures?game_id={{ game.key() }}">
+                                Editar caza
+                            </a>
+                            {% elif not is_user_joined %}
+                            <a class="btn btn-primary"
+                               href="/games/join?game_id={{ game.key() }}">
+                                Unirse a la caza
+                            </a>
+                            {% elif is_user_joined and game.is_active %}
+                            <a class="btn btn-primary"
+                               href="/games/treasures?game_id={{ game.key() }}">
+                                Abrir caza
+                            </a>
+                            {% else %}
+                            <a class="btn btn-primary"
+                               href="/games/win?game_id={{ game.key() }}">
+                                Abrir caza completada
+                            </a>
+                            {% endif %}
+
+                        </td>
+
+                        {% if is_user_joined %}
+                        <td>
+                            <a class="btn btn-danger"
+                               href="/games/unjoin?game_id={{ game.key() }}">
+                                Abandonar la caza
+                                <span style="margin-left: 5px;" class="glyphicon glyphicon-list-alt"
+                                      aria-hidden="true"></span>
+                            </a>
+                        </td>
+                        {% elif game.owner.key() == user.key() %}
+                        <td>
+                            <a class="btn btn-danger"
+                               href="/games/remove?game_id={{ game.key() }}">
+                                Eliminar la caza
+                                <span style="margin-left: 5px;" class="glyphicon glyphicon-list-alt"
+                                      aria-hidden="true"></span>
+                            </a>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="row">
+                    <div class="col text-center">
+                        <div class="col bg-info warning_mesagge">
+                            <label>No existen juegos actualmente que cumplan estas características.</label>
+                        </div>
+                    </div>
+                </div>
+
+                {% endif %}
+
+                <p></p>
+                <p></p>
+
+                <a class="btn btn-primary align-right"
+                   href="/games/add">
+                    Crear juego
+                </a>
+
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

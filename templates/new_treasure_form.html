@@ -1,0 +1,60 @@
+{% extends 'navbar.html' %}
+
+{% block tittle %} Formulario tesoro {% endblock %}
+
+{% block content %}
+<div style="margin-right: 9%; margin-left: 9%;">
+    <div class="p-5 bg-white rounded box-shadow align-content-center">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <h1>Nuevo tesoro capitán<span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span></h1>
+            </div>
+        </div>
+        <br/>
+        <br/>
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8 align-content-center">
+                <form class="form-horizontal" style="margin: auto" role="form" action="" method="post">
+                    <div class="form-group">
+                        <label for="inputName" class="col-sm-3 control-label">Nombre</label>
+
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" name="inputName" id="inputName"
+                                   placeholder="Nombre del tesoro a cazar">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputLatitude" class="col-sm-3 control-label">Latitud</label>
+
+                        <div class="col-sm-6">
+                            <input type="number" class="form-control" name="inputLatitude" id="inputLatitude"
+                                   placeholder="Latitud del tesoro en el mapa pirata">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputLongitude" class="col-sm-3 control-label">Longitud</label>
+
+                        <div class="col-sm-6">
+                            <input type="number" class="form-control" name="inputLongitude" id="inputLongitude"
+                                   placeholder="Longitud del tesoro en el mapa pirata">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputDescription" class="col-sm-3 control-label">Descripci&oacute;n</label>
+
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" name="inputDescription" id="inputDescription"
+                                   placeholder="Escriba la descripci&oacute;n del tesoro (opcional)">
+                        </div>
+                    </div>
+                    <div class="form-group text-center">
+                        <button type="submit" value="submit" class="btn btn-success">Crear y enterrar</button>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}

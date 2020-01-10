@@ -1,0 +1,66 @@
+{% extends 'navbar.html' %}
+
+{% block tittle %} Datos de tesoro {% endblock %}
+
+{% block content %}
+
+<div style="margin-right: 9%; margin-left: 9%;">
+    <div class="p-5 bg-white rounded box-shadow align-content-center">
+
+        <h1>Tesoro {{ treasure.name }}</h1>
+
+        <table class="table">
+            <thead>
+            <th>Subir Imagen</th>
+            </thead>
+            <tbody>
+            <tr>
+                <td>
+                    <form action="/games/treasures/image?game_id={{ game.key() }}&treasure_id={{ treasure.key() }}"
+                          method="POST" enctype="multipart/form-data">
+                        <input type="file" name="image" accept="image/*" id="image" onchange="previewFile()">
+                        <input type="submit">
+                        <img src="" height="400" alt="Vista previa de la imagen">
+                    </form>
+                </td>
+            </tr>
+        </table>
+
+        {% if image_base64 != None %}
+        <h2>Imagen actualmente subida</h2>
+        <img src="data:image/png;base64, {{ image_base64 }}" alt="Treasure image"/>
+
+        <a class="btn btn-danger"
+           href="/games/treasures/image/delete?game_id={{ game.key() }}&treasure_id={{ treasure.key() }}">
+            Eliminar imagen actual
+            <span style="margin-left: 5px;" class="glyphicon glyphicon-list-alt"
+                  aria-hidden="true"></span>
+        </a>
+        {% else %}
+        <h2>Actualmente no has subido ninguna foto</h2>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
+
+
+{% block addjs %}
+<script>
+    function previewFile() {
+        var preview = document.querySelector('img');
+        var file = document.querySelector('input[type=file]').files[0];
+        var reader = new FileReader();
+
+        reader.onloadend = function () {
+            preview.src = reader.result;
+        }
+
+        if (file) {
+            reader.readAsDataURL(file);
+        } else {
+            preview.src = "";
+        }
+    }
+</script>
+{% endblock %}
