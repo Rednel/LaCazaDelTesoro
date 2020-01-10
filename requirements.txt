@@ -1,7 +1,4 @@
-requests
-oauthlib
-Flask==1.1.1
-Werkzeug==0.16.0
+webapp2
 google
-flask_dance
-requests-toolbelt
+flask
+jinja2
