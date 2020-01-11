@@ -18,9 +18,9 @@
                 <td>
                     <form action="/games/treasures/image?game_id={{ game.key() }}&treasure_id={{ treasure.key() }}"
                           method="POST" enctype="multipart/form-data">
-                        <input type="file" name="image" accept="image/*" id="image" onchange="previewFile()">
+                        <input type="file" name="image_treasure" accept="image/*" id="image_treasure" onchange="previewFile()">
                         <input type="submit">
-                        <img src="" height="400" alt="Vista previa de la imagen">
+                        <img id="image_treasure" src="" height="400" alt="Vista previa de la imagen">
                     </form>
                 </td>
             </tr>
@@ -48,13 +48,13 @@
 {% block addjs %}
 <script>
     function previewFile() {
-        var preview = document.querySelector('img');
+        var preview = document.querySelectorAll('img')[1];
         var file = document.querySelector('input[type=file]').files[0];
         var reader = new FileReader();
 
         reader.onloadend = function () {
             preview.src = reader.result;
-        }
+        };
 
         if (file) {
             reader.readAsDataURL(file);

@@ -10,8 +10,8 @@ import time
 from views.google_views import google_view
 from views.treasure import treasure_view
 from views.game import game_view
-from views.twitter_views import twitter_view, twitter_bp
-from views.facebook_views import facebook_view, facebook_bp
+#from views.twitter_views import twitter_view, twitter_bp
+#from views.facebook_views import facebook_view, facebook_bp
 from views.profile import profile_view
 
 # Patch to fix AppEngine
@@ -21,11 +21,11 @@ app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
 
 app.register_blueprint(google_bp, url_prefix="/")
-app.register_blueprint(twitter_bp, url_prefix="/")
-app.register_blueprint(facebook_bp, url_prefix="/")
+#app.register_blueprint(twitter_bp, url_prefix="/")
+#app.register_blueprint(facebook_bp, url_prefix="/")
 app.register_blueprint(google_view, url_prefix="/google")
-app.register_blueprint(twitter_view, url_prefix="/twitter")
-app.register_blueprint(facebook_view, url_prefix="/facebook")
+#app.register_blueprint(twitter_view, url_prefix="/twitter")
+#app.register_blueprint(facebook_view, url_prefix="/facebook")
 app.register_blueprint(profile_view, url_prefix="/profile")
 app.register_blueprint(treasure_view, url_prefix="/games/treasures")
 app.register_blueprint(game_view, url_prefix="/games")
@@ -36,7 +36,7 @@ app.register_blueprint(game_view, url_prefix="/games")
 def home(user=None):
     return render_template('home.html', user=user)
 
-  
+
 @app.route("/treasure")  # creates a new treasure
 def treasures():
     return render_template("treasures.html")
@@ -166,7 +166,6 @@ def conversation_new():
         return render_template('conversation.html', conversations=conversation_global)
 
 
-
 @app.route('/message', methods=['GET', 'POST'])
 def message():
     if request.method == 'POST':
@@ -203,14 +202,14 @@ def get_conversations_of_the_user_id(id):
     for i in user_conversation:
         if i['members'][0]['iduser'] == int(id):
             if cont % 2 == 0:
-                conversation_global.append({'id': i['id'], 'user': i['members'][1], 'color': False},)
+                conversation_global.append({'id': i['id'], 'user': i['members'][1], 'color': False}, )
             else:
-                conversation_global.append({'id': i['id'], 'user': i['members'][1], 'color': True},)
+                conversation_global.append({'id': i['id'], 'user': i['members'][1], 'color': True}, )
         else:
             if cont % 2 == 0:
-                conversation_global.append({'id': i['id'], 'user': i['members'][0], 'color': False},)
+                conversation_global.append({'id': i['id'], 'user': i['members'][0], 'color': False}, )
             else:
-                conversation_global.append({'id': i['id'], 'user': i['members'][0], 'color': True},)
+                conversation_global.append({'id': i['id'], 'user': i['members'][0], 'color': True}, )
         cont += 1
     return conversation_global
 
