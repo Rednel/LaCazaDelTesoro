@@ -11,8 +11,8 @@
                         <img src="{{ url_for('static', filename='img1.png') }}">
                     </div>
                     <div >
-                    <h4>{{ person }}</h4>
-                    <h6>Subtitle</h6>
+                    <h4>{{ person.user_name }}</h4>
+                    <h6>{{ person.user_name }} {{ person.last_name }}</h6>
                     </div>
                 </div>
 
@@ -24,7 +24,7 @@
                 <div class="chats">
                     <div class="msg-page example-1 scrollbar-ripe-malinka">
                         {% for conversation in conversations %}
-                            {% if (conversation.senderid == id|int) %}
+                            {% if (conversation.user == id|int) %}
                                 <div class="d-flex flex-row-reverse">
                                     <div class="p-2">
                                         <img src="{{ url_for('static', filename='img1.png') }}" alt="">
@@ -54,14 +54,15 @@
         </div>
         <nav class="navbar navbar-light inbox" style="background-color: #e3f2fd;">
 
-                <form method="POST" action="/message">
-                    <div class="input-group mb-3">
+                <form method="POST" action="/message/{{ id_conversation }}">
+                    <div class="input-group mb-3 form-group">
                         <div class="info">
                             <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" name="msg">
-                            <button type="button" class="btn btn-primary" value="submit"><span class="glyphicon glyphicon-send" aria-hidden="true"></span></button>
+                            <button type="button submit" class="btn btn-primary" value="submit"><span class="glyphicon glyphicon-send" aria-hidden="true"></span></button>
                         </div>
                     </div>
                 </form>
+
         </nav>
     </div>
 
