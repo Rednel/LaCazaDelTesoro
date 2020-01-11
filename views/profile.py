@@ -1,5 +1,4 @@
-from flask import session, redirect, url_for, Blueprint, abort, render_template
-import requests
+from flask import Blueprint, render_template
 
 from views.google_views import login_required
 

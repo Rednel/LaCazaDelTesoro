@@ -1,3 +1,5 @@
+facebook
+twitter
 webapp2
 google
 flask

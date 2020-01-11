@@ -8,73 +8,77 @@
     <!-- Bootstrap CSS -->
     <title>{% block tittle %}La Caza del Tesoro{% endblock %}</title>
     {% block css %}
-    <link rel="stylesheet" href="/static/vendor/bootstrap/css/bootstrap.min.css">
-    <link href="/static/css/navbar_style.css" rel="stylesheet" id="bootstrap-css">
-    <link href="/static/vendor/fontawesome/css/all.min.css" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="/static/vendor/bootstrap/css/bootstrap.min.css">
+        <link href="/static/css/navbar_style.css" rel="stylesheet" id="bootstrap-css">
+        <link href="/static/vendor/fontawesome/css/all.min.css" rel="stylesheet" type="text/css">
     {% endblock %}
     {% block addcss %}{% endblock %}
 </head>
 
 <body>
-    {% if user != None %}
-        <nav class="navbar navbar-light navbar-expand-xl sticky-top shadow" style="background-color: #e3f2fd;">
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#toggler_id"
+{% if user != None %}
+    <nav class="navbar navbar-light navbar-expand-xl sticky-top shadow" style="background-color: #e3f2fd;">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#toggler_id"
                 aria-controls="toggler_id" aria-expanded="false" aria-label="Navegación">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="navbar justify-content-center order-2 p-1" style="width: 63px; height: 33px">
-                <a class="fas fa-bell object-color" style="text-decoration:none; color: gray" href="#"></a>
-                <span class="badge badge-danger badge-counter" style="transform: translate(-3px,-10px);">*</span>
-            </div>
-            <div class="navbar justify-content-center order-2 p-1" style="width: 63px; height: 33px">
-                <a class="fas fa-envelope object-color" style="text-decoration:none; color: gray" href="#"></a>
-                <span class="badge badge-danger badge-counter" style="transform: translate(0px,-10px);">*</span>
-            </div>
-            <div class="navbar topbar-divider d-none d-sm-block justify-content-center order-2 pl-0 ml-0"></div>
-            <div class="nav-item dropdown justify-content-center order-2">
-                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown"
-                    aria-haspopup="true" aria-expanded="false">
-                    <span class="mr-2 d-lg-inline text-gray-600 small letter-color">{{ user.name + " " + user.surname }}</span>
-                    <img class="crop rounded-circle"
-                        src="{{ user.picture }}"
-                        alt="profile-image">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="navbar justify-content-center order-2 p-1" style="width: 63px; height: 33px">
+            <a class="fas fa-bell object-color" style="text-decoration:none; color: gray" href="#"></a>
+            <span class="badge badge-danger badge-counter" style="transform: translate(-3px,-10px);">*</span>
+        </div>
+        <div class="navbar justify-content-center order-2 p-1" style="width: 63px; height: 33px">
+            <a class="fas fa-envelope object-color" style="text-decoration:none; color: gray" href="#"></a>
+            <span class="badge badge-danger badge-counter" style="transform: translate(0px,-10px);">*</span>
+        </div>
+        <div class="navbar topbar-divider d-none d-sm-block justify-content-center order-2 pl-0 ml-0"></div>
+        <div class="nav-item dropdown justify-content-center order-2">
+            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown"
+               aria-haspopup="true" aria-expanded="false">
+                <span class="mr-2 d-lg-inline text-gray-600 small letter-color">{{ user.name + " " + user.surname }}</span>
+                <img class="crop rounded-circle"
+                     src="{{ user.picture }}"
+                     alt="profile-image">
+            </a>
+            <!-- Dropdown - User Information -->
+            <div class="dropdown-menu" id="dropdown-menu-centered">
+                <a class="dropdown-item" href="/profile">
+                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Profile
                 </a>
-                <!-- Dropdown - User Information -->
-                <div class="dropdown-menu" id="dropdown-menu-centered">
-                    <a class="dropdown-item" href="/profile">
-                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Profile
-                    </a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="/google/logout">
-                        <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Logout
-                    </a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="/google/logout">
+                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Logout
+                </a>
+            </div>
+        </div>
+
+        <div class="collapse navbar-collapse" id="toggler_id">
+            <a class="navbar d-flex justify-content-center" style="text-decoration:none; color:black" href="/">
+                <h3><b>Home</b></h3>
+            </a>
+            <div class="navbar-collapse d-flex justify-content-center" style="margin-left:100px;">
+                <div class="navbar-nav">
+                    <a class="nav-item nav-link expand" style="color: black" href="/games"><b>Buscar nuevas
+                        Cazas</b></a>
+                    <a class="nav-item nav-link expand" style="color: black" href="/games/created"><b>Mis Cazas
+                        creadas</b></a>
+                    <a class="nav-item nav-link expand" style="color: black" href="/games/active"><b>Mis Cazas
+                        activas </b></a>
+                    <a class="nav-item nav-link expand" style="color: black" href="/games/completed"><b>Mis Cazas
+                        finalizadas</b></a>
                 </div>
             </div>
-
-            <div class="collapse navbar-collapse" id="toggler_id">
-                    <a class="navbar d-flex justify-content-center" style="text-decoration:none; color:black" href="/">
-                        <h3><b>Home</b></h3>
-                    </a>
-                    <div class="navbar-collapse d-flex justify-content-center" style="margin-left:100px;">
-                    <div class="navbar-nav">
-                        <a class="nav-item nav-link expand" style="color: black" href="#"><b>Buscar nuevas Cazas</b></a>
-                        <a class="nav-item nav-link expand" style="color: black" href="#"><b>Mis Cazas creadas</b></a>
-                        <a class="nav-item nav-link expand" style="color: black" href="#"><b>Mis Cazas activas </b></a>
-                        <a class="nav-item nav-link expand" style="color: black" href="#"><b>Mis Cazas finalizadas</b></a>
-                    </div>
-                    </div>
-            </div>
-        </nav>
-    {% endif %}
-    <div class="bg">
-        <div class="carlos">
-            {% block content %}{% endblock %}
         </div>
+    </nav>
+{% endif %}
+<div class="bg">
+    <div class="carlos">
+        {% block content %}{% endblock %}
     </div>
+</div>
 
-    {% block js %}
+{% block js %}
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="/static/vendor/jquery/jquery.min.js"></script>
@@ -83,9 +87,9 @@
 
     <!-- Custom scripts for all pages-->
     <!-- None -->
-    {% endblock %}
-    {% block addjs %}
-    {% endblock %}
+{% endblock %}
+{% block addjs %}
+{% endblock %}
 
 </body>
 

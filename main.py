@@ -10,8 +10,8 @@ import time
 from views.google_views import google_view
 from views.treasure import treasure_view
 from views.game import game_view
-from views.twitter_views import twitter_view, twitter_bp
-from views.facebook_views import facebook_view, facebook_bp
+#from views.twitter_views import twitter_view, twitter_bp
+#from views.facebook_views import facebook_view, facebook_bp
 from views.profile import profile_view
 
 # Patch to fix AppEngine
@@ -21,27 +21,25 @@ app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
 
 app.register_blueprint(google_bp, url_prefix="/")
-app.register_blueprint(twitter_bp, url_prefix="/")
-app.register_blueprint(facebook_bp, url_prefix="/")
+#app.register_blueprint(twitter_bp, url_prefix="/")
+#app.register_blueprint(facebook_bp, url_prefix="/")
 app.register_blueprint(google_view, url_prefix="/google")
-app.register_blueprint(treasure_view, url_prefix="/games/treasures")
-app.register_blueprint(game_view, url_prefix="/games")
-app.register_blueprint(twitter_view, url_prefix="/twitter")
-app.register_blueprint(facebook_view, url_prefix="/facebook")
+#app.register_blueprint(twitter_view, url_prefix="/twitter")
+#app.register_blueprint(facebook_view, url_prefix="/facebook")
 app.register_blueprint(profile_view, url_prefix="/profile")
 app.register_blueprint(treasure_view, url_prefix="/games/treasures")
 app.register_blueprint(game_view, url_prefix="/games")
 
 
 @app.route('/')
-def home():
-    return render_template('index.html')
+@get_user
+def home(user=None):
+    return render_template('home.html', user=user)
 
 
-@app.route('/test', methods=['GET'])
-@login_required
-def test_oauth(user):
-    return "You are {email} on Google".format(email=user.email)
+@app.route("/treasure")  # creates a new treasure
+def treasures():
+    return render_template("treasures.html")
 
 
 """ 
