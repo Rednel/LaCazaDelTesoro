@@ -1,9 +1,9 @@
-{% extends "base.html" %}
+{% extends "navbar.html" %}
 {% block content %}
 
     <div class="list-group">
     {% for user in users  %}
-        <a href="../add_conversation/{{ user.key().id() }}" class="list-group-item">{{ user.user_name }}: {{ user.first_name }} {{ user.last_name }}</a>
+        <a href="/conversation/add?receiver_id={{ user.key() }}" class="list-group-item">{{ user.email }}: {{ user.name }} {{ user.surname }}</a>
     {% endfor %}
     </div>
 
