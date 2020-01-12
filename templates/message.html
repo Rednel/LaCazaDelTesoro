@@ -1,6 +1,6 @@
 {% extends "navbar.html" %}
 {% block content %}
- conversations=result, user=user, receiver_user=receiver_user
+ conversation=conversation, user=user, receiver_user=receiver_user
     <link rel="stylesheet" href="{{ url_for('static', filename='css/msgstyle.css') }}">
 
     <div class="container">
@@ -22,14 +22,15 @@
             <div class="msg-inbox">
                 <div class="chats">
                     <div class="msg-page example-1 scrollbar-ripe-malinka">
-                        {% for conversation in conversations %}
-                            {% if (conversation.user1.key() == user.key()) %}
+                        {% for message in messages %}
+                            {% if (message.user.key() == user.key()) %}
                                 <div class="d-flex flex-row-reverse">
                                     <div class="p-2">
                                         <img src="{{ url_for('static', filename='img1.png') }}" alt="">
                                     </div>
                                     <div class="p-2 outgoing-chats-msg">
-                                        <p>{{ conversation.message }}</p>
+                                        <p>{{ message.message }}</p>
+                                        <span class="time">{{ message.time }}</span>
                                     </div>
                                 </div>
                             {% else %}
@@ -38,7 +39,8 @@
                                         <img src="{{ url_for('static', filename='img1.png') }}" alt="">
                                     </div>
                                     <div class="p-2 received-msg">
-                                        <p>{{ conversation.message }}</p>
+                                        <p>{{ message.message }}</p>
+                                        <span class="time">{{ message.time }}</span>
                                     </div>
                                 </div>
                             {% endif %}
