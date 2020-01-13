@@ -146,6 +146,7 @@ def win_game(game=None, winner=None, owner=None):
         game.winner = winner
         game.is_active = False
         Game.save(game)
+        return game
 
 
 def reopen_game(game=None, user=None):

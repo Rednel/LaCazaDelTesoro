@@ -1,10 +1,14 @@
 {% extends "navbar.html" %}
 {% block content %}
 
-    <div class="list-group">
-    {% for user in users  %}
-        <a href="/conversation/open?receiver_id={{ user.key() }}" class="list-group-item">{{ user.email }}: {{ user.name }} {{ user.surname }}</a>
-    {% endfor %}
+    <div style="margin-right: 30%; margin-left: 30%;">
+        <div class="p-2 bg-white rounded box-shadow align-content-center">
+            <div class="list-group">
+                {% for user in users %}
+                    <a href="/conversation/open?receiver_id={{ user.key() }}"
+                       class="list-group-item d-flex justify-content-center">{{ user.email }}: {{ user.name }} {{ user.surname }}</a>
+                {% endfor %}
+            </div>
+        </div>
     </div>
-
 {% endblock %}

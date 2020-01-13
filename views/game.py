@@ -1,6 +1,8 @@
 from flask import render_template, request, Blueprint, redirect, url_for
 import models.facade
 from views.google_views import login_required
+from views.twitter_views import send_twitter_message_init, send_twitter_message_finished
+from views.facebook_views import send_facebook_message_init, send_facebook_message_finished
 
 game_view = Blueprint('game_views', __name__)
 
@@ -23,7 +25,9 @@ def render_games_form_get(user):
 def render_games_form_post(user):
     name = request.form.get('inputGameName')
     if name != "":
-        models.facade.get_or_insert_game(name=name, owner=user)
+        game = models.facade.get_or_insert_game(name=name, owner=user)
+        send_twitter_message_init(game=game)
+        send_facebook_message_init(game=game)
         return redirect(url_for("game_views.show_created_games"))
     else:
         return render_template('new_game_form.html')
@@ -93,7 +97,9 @@ def win_game(owner):
     winner_id = request.args.get('winner_id')
     game = models.facade.get_game_by_id(game_id=game_id)
     winner = models.facade.get_user_by_user_id(user_id=winner_id)
-    models.facade.win_game(game=game, winner=winner, owner=owner)
+    game = models.facade.win_game(game=game, winner=winner, owner=owner)
+    send_twitter_message_finished(game)
+    send_facebook_message_finished(game)
     return render_template('winner.html', game=game, user=owner)
 
 

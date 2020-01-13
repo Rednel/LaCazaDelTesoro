@@ -1,6 +1,9 @@
 {% extends "navbar.html" %}
-{% block content %}
+{% block tittle %} Chat de caza {% endblock %}
+{% block addcss %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/msgstyle.css') }}">
+{% endblock %}
+{% block content %}
 
     <div class="container">
         <nav class="navbar navbar-dark bg-primary d-flex flex-row inbox">
