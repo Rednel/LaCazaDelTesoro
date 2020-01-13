@@ -1,20 +1,22 @@
-{% extends "base.html" %}
+{% extends "navbar.html" %}
 {% block content %}
 
 <link rel="stylesheet" href="{{ url_for('static', filename='css/conversationstyle.css') }}">
+
+    <a href="../listconversation"><button type="button" class="btn btn-success" >Nueva conversación</button></a>
 
     <div class="list-group">
 
         {% for conversation in conversations %}
         {% if conversation.color %}
-          <a href="../message" class="list-group-item list-group-item-action list-group-item-info">
-            <h4 class="list-group-item-heading">{{ conversation.user }}</h4>
-            <p class="list-group-item-text">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
+          <a href="../message/{{ conversation.id }}" class="list-group-item list-group-item-action list-group-item-info">
+            <h4 class="list-group-item-heading">{{ conversation.user.user_name }}</h4>
+            <p class="list-group-item-text">{{ conversation.user.first_name }} {{ conversation.user.last_name }}</p>
           </a>
         {% else %}
-            <a href="../message" class="list-group-item list-group-item-action">
-                <h4 class="list-group-item-heading">{{ conversation.user }}</h4>
-                <p class="list-group-item-text">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
+            <a href="../message/{{ conversation.id }}" class="list-group-item list-group-item-action">
+                <h4 class="list-group-item-heading">{{ conversation.user.user_name }}</h4>
+                <p class="list-group-item-text">{{ conversation.user.first_name }} {{ conversation.user.last_name }}</p>
             </a>
         {% endif %}
         {% endfor %}

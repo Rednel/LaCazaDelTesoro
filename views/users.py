@@ -20,7 +20,7 @@ def user_all():
 @users_routes.route('/user_one/<id>')
 def user_one(id):
     user_id = int(id)
-    user = get_user_one(user_id)
+    user = get_user_by_user_id(user_id)
     return render_template('user/user_one.html', user=user)
 
 
