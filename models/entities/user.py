@@ -8,6 +8,9 @@ class User(db.Model, JSONEncoder):
     surname = db.StringProperty(required=True)
     picture = db.StringProperty(required=True)
     role = db.StringProperty(default="user")
+    twitter_tag = db.StringProperty(default=None)
+    facebook_tag = db.StringProperty(default=None)
+    facebook_tag_id = db.StringProperty(default=None)
 
     def default(self, o):
         return {"email": o.email,
