@@ -4,3 +4,8 @@
     margin-right: auto;
     float:center;
 }
+
+.btn {
+    margin: 20px auto;
+    display: block;
+}

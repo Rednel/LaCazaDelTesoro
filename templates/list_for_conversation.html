@@ -1,0 +1,10 @@
+{% extends "navbar.html" %}
+{% block content %}
+
+    <div class="list-group">
+    {% for user in users  %}
+        <a href="/conversation/open?receiver_id={{ user.key() }}" class="list-group-item">{{ user.email }}: {{ user.name }} {{ user.surname }}</a>
+    {% endfor %}
+    </div>
+
+{% endblock %}

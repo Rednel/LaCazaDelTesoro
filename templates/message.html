@@ -1,6 +1,6 @@
-{% extends "base.html" %}
+{% extends "navbar.html" %}
 {% block content %}
-
+ conversation=conversation, user=user, receiver_user=receiver_user
     <link rel="stylesheet" href="{{ url_for('static', filename='css/msgstyle.css') }}">
 
     <div class="container">
@@ -11,8 +11,7 @@
                         <img src="{{ url_for('static', filename='img1.png') }}">
                     </div>
                     <div >
-                    <h4>{{ person }}</h4>
-                    <h6>Subtitle</h6>
+                    <h6>{{ receiver_user.email }} : {{ receiver_user.name }} {{ receiver_user.surname }}</h6>
                     </div>
                 </div>
 
@@ -23,15 +22,15 @@
             <div class="msg-inbox">
                 <div class="chats">
                     <div class="msg-page example-1 scrollbar-ripe-malinka">
-                        {% for conversation in conversations %}
-                            {% if (conversation.senderid == id|int) %}
+                        {% for message in messages %}
+                            {% if (message.user.key() == user.key()) %}
                                 <div class="d-flex flex-row-reverse">
                                     <div class="p-2">
                                         <img src="{{ url_for('static', filename='img1.png') }}" alt="">
                                     </div>
                                     <div class="p-2 outgoing-chats-msg">
-                                        <p>{{ conversation.message }}</p>
-                                        <span class="time">{{ conversation.time }}</span>
+                                        <p>{{ message.message }}</p>
+                                        <span class="time">{{ message.time }}</span>
                                     </div>
                                 </div>
                             {% else %}
@@ -40,8 +39,8 @@
                                         <img src="{{ url_for('static', filename='img1.png') }}" alt="">
                                     </div>
                                     <div class="p-2 received-msg">
-                                        <p>{{ conversation.message }}</p>
-                                        <span class="time">{{ conversation.time }}</span>
+                                        <p>{{ message.message }}</p>
+                                        <span class="time">{{ message.time }}</span>
                                     </div>
                                 </div>
                             {% endif %}
@@ -54,14 +53,15 @@
         </div>
         <nav class="navbar navbar-light inbox" style="background-color: #e3f2fd;">
 
-                <form method="POST" action="/message">
-                    <div class="input-group mb-3">
+                <form method="POST" action="/message?conversation_id={{ conversation.key() }}">
+                    <div class="input-group mb-3 form-group">
                         <div class="info">
                             <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" name="msg">
-                            <button type="button" class="btn btn-primary" value="submit"><span class="glyphicon glyphicon-send" aria-hidden="true"></span></button>
+                            <button type="button submit" class="btn btn-primary" value="submit"><span class="glyphicon glyphicon-send" aria-hidden="true"></span></button>
                         </div>
                     </div>
                 </form>
+
         </nav>
     </div>
 
