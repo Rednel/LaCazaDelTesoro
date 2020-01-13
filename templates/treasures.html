@@ -1,143 +1,25 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+{% extends 'navbar.html' %}
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <script src='https://api.mapbox.com/mapbox-gl-js/v1.4.1/mapbox-gl.js'></script>
-    <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/turf/v3.0.11/turf.min.js'></script>
-    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.9/mapbox-gl-draw.js'></script>
-    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.2/mapbox-gl-geocoder.min.js'></script>
+{% block tittle %} Caza {{ game.name }} {% endblock %}
+
+{% block addcss %}
     <link rel='stylesheet'
           href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.2/mapbox-gl-geocoder.css'
           type='text/css'/>
     <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.9/mapbox-gl-draw.css'
           type='text/css'/>
-    <script src='/static/js/map.js'></script>
     <link href='https://api.mapbox.com/mapbox-gl-js/v1.4.1/mapbox-gl.css' rel='stylesheet'/>
+{% endblock %}
 
-
-    <title>Caza {{ game.name }}</title>
-</head>
-<body>
-<div class="row">
-    <div class="span6" style="float: none; margin: 0 auto;">
-        <nav class="navbar navbar-light bg-info">
-        <span class="navbar-brand mb-0 h1">
-            <h5>{{ game.name }}</h5>
-            <p><h6>Creada por: {{ game.owner.email }}</h6></p>
-            <p><h6>Número de participantes: {{ game.participants.count() }}</h6></p>
-        </span>
-        </nav>
-    </div>
-</div>
-<p/>
-<div class="row">
-    <div class="col col-lg-6">
-        <div id='interactive-map' style='width: 800px; height: 800px;'></div>
-    </div>
-
-    <div class="col">
-        <div class="row">
-            <div class="span6" style="float: none; margin: 0 auto;">
-                <nav class="navbar navbar-light bg-success">
-                    <h5>Tesoros</h5>
-                </nav>
-            </div>
-            <div class="container">
-                {% if treasures %}
-                    <table class="table">
-                        <thead>
-                        <th>Nombre</th>
-                        <th>Latitud</th>
-                        <th>Longitud</th>
-                        <th>Gestionar imagen</th>
-                        </thead>
-                        <tbody>
-                        {% for treasure in treasures %}
-                            <tr>
-                                <td>{{ treasure.name }}</td>
-                                <td>{{ treasure.lat }}</td>
-                                <td>{{ treasure.lon }}</td>
-                                <td>
-                                    <a class="btn btn-primary"
-                                       href="/games/treasures/image?game_id={{ game.key() }}&treasure_id={{ treasure.key() }}">
-                                        Ver imagen
-                                    </a>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                {% else %}
-                    <div class="row">
-                        <div class="col-lg-12 text-center">
-                            <div class="col-md-3"></div>
-                            <div class="col-md-6 bg-warning warning_mesagge">
-                                <label>No existen tesoros aun.</label>
-                            </div>
-                        </div>
-                    </div>
-
-                {% endif %}
-
-                {% if user.key() == game.owner.key() %}
-                    <br/>
-                    <a class="btn btn-primary"
-                       href=javaScript:completeAndRedirect()>
-                        Actualizar tesoros
-                        <span style="margin-left: 5px;" class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
-                    </a>
-                    <br/>
-                    <br/>
-                    <h2>Participantes actuales</h2>
-                    <table class="table">
-                        <thead>
-                        <th>Nombre participante</th>
-                        <th>Número de tesoros encontrados</th>
-                        </thead>
-                        <tbody>
-                        {% for (x,y) in participant_images_tuples %}
-                            <tr>
-                                <td>{{ x.email }}</td>
-                                <td>{{ y }}</td>
-                                {% if y == treasures.count() and game.is_active %}
-                                    <td>
-                                        <a class="btn btn-primary"
-                                           href="/games/snapshots?game_id={{ game.key() }}&player_id={{ x.key() }}">
-                                            Verificar tesoros
-                                        </a>
-                                    </td>
-                                {% endif %}
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                    {% if not game.is_active %}
-                        <a class="btn btn-primary align-right"
-                           href="/games/reopen?game_id={{ game.key() }}">
-                            Reabrir juego
-                        </a>
-                    {% endif %}
-                {% endif %}
-            </div>
-        </div>
-    </div>
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-            crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-            crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-            crossorigin="anonymous"></script>
+{% block addjs %}
+    <script src='https://api.mapbox.com/mapbox-gl-js/v1.4.1/mapbox-gl.js'></script>
+    <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/turf/v3.0.11/turf.min.js'></script>
+    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.9/mapbox-gl-draw.js'></script>
+    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.2/mapbox-gl-geocoder.min.js'></script>
+    <script src='../../static/js/map.js'></script>
+    <script>
+        createInteractiveMap("interactive-map");
+    </script>
 
     <script>
         if ('{{ game.map|safe }}' === 'None') {
@@ -153,7 +35,120 @@
             location.href = "/games/treasures/add?game_id={{ game.key() }}&map_json=" + exportedMap;
         }
     </script>
+{% endblock %}
+
+{% block content %}
+<div style="margin-right: 0%; margin-left: 0%; margin-top: 4%;">
+    <div class="p-5 bg-white rounded box-shadow align-content-center">
+
+        <div class="row row-cols-1 row-cols-sm-1 row-cols-md-1 row-cols-lg-1 row-cols-xl-2">
+            <div class="col-auto">
+                <div id='interactive-map' style='width: 800px; height: 800px;'></div>
+            </div>
+
+            <div class="col pl-lg-5 pt-sm-5 resize2">
+                <div class="row">
+            <div class="span6" style="float: none; margin: auto;">
+                <nav class="navbar navbar-light bg-info mb-4">
+
+        <span class="mb-0 h1">
+            <h5>{{ game.name }}</h5>
+            <p><h6>Creada por: {{ game.owner.email }}</h6></p>
+            <p><h6>Número de participantes: {{ game.participants.count() }}</h6></p>
+        </span>
+                </nav>
+            </div>
+        </div>
+                <div class="row">
+                    <div class="span6" style="margin: 0 auto">
+                        <nav class="navbar navbar-light bg-success">
+                            <h5>Tesoros</h5>
+                        </nav>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="container">
+                        {% if treasures %}
+                        <table class="table">
+                            <thead>
+                            <th>Nombre</th>
+                            <th>Latitud</th>
+                            <th>Longitud</th>
+                            <th>Gestionar imagen</th>
+                            </thead>
+                            <tbody>
+                            {% for treasure in treasures %}
+                            <tr>
+                                <td>{{ treasure.name }}</td>
+                                <td>{{ treasure.lat }}</td>
+                                <td>{{ treasure.lon }}</td>
+                                <td>
+                                    <a class="btn btn-primary"
+                                       href="/games/treasures/image?game_id={{ game.key() }}&treasure_id={{ treasure.key() }}">
+                                        Ver imagen
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        {% else %}
+                        <div class="row">
+                            <div class="col-12 text-center">
+                                <div class="col-3"></div>
+                                <div class="col-6 bg-warning warning_mesagge">
+                                    <label>No existen tesoros aun.</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        {% endif %}
+
+                        {% if user.key() == game.owner.key() %}
+                        <br/>
+
+                            <a class="btn btn-primary"
+                       href=javaScript:completeAndRedirect()>
+                        Actualizar tesoros
+                        <span style="margin-left: 5px;" class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
+                    </a>
+                        <br/>
+                        <br/>
+                        <h2>Participantes actuales</h2>
+                        <table class="table">
+                            <thead>
+                            <th>Nombre participante</th>
+                            <th>Número de tesoros encontrados</th>
+                            </thead>
+                            <tbody>
+                            {% for (x,y) in participant_images_tuples %}
+                            <tr>
+                                <td>{{ x.email }}</td>
+                                <td>{{ y }}</td>
+                                {% if y == treasures.count() and game.is_active %}
+                                <td>
+                                    <a class="btn btn-primary"
+                                       href="/games/snapshots?game_id={{ game.key() }}&player_id={{ x.key() }}">
+                                        Verificar tesoros
+                                    </a>
+                                </td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        {% if not game.is_active %}
+                        <a class="btn btn-primary align-right"
+                           href="/games/reopen?game_id={{ game.key() }}">
+                            Reabrir juego
+                        </a>
+                        {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-</body>
-</html>
+{% endblock %}
 
