@@ -32,7 +32,7 @@
                         {% endif %}
 
                         <td>
-                            {% if game.owner.key() == user.key() %}
+                            {% if game.owner.key() == user.key() or user.role == "admin" %}
                             <a class="btn btn-primary"
                                href="/games/treasures?game_id={{ game.key() }}">
                                 Editar caza
@@ -65,7 +65,7 @@
                                       aria-hidden="true"></span>
                             </a>
                         </td>
-                        {% elif game.owner.key() == user.key() %}
+                        {% elif game.owner.key() == user.key() or user.role == "admin" %}
                         <td>
                             <a class="btn btn-danger"
                                href="/games/remove?game_id={{ game.key() }}">

@@ -10,7 +10,7 @@ import json
 
 
 def owning_game(element, user):
-    return element.owner.key() == user.key()
+    return element.owner.key() == user.key() or user.role == "admin"
 
 
 def get_created_games_by_user(user=None):
@@ -46,7 +46,7 @@ def get_active_games_by_user(user=None):
     if user is not None:
         result = list()
         for participant in Participant.all():
-            if participant.user.key() == user.key() and participant.game.is_active:
+            if (participant.user.key() == user.key()) or user.role == "admin" and participant.game.is_active:
                 result.append(participant.game)
         return result
     return list()
@@ -60,7 +60,7 @@ def get_completed_games_by_user(user=None):
     if user is not None:
         result = list()
         for participant in Participant.all():
-            if participant.user.key() == user.key() and not participant.game.is_active:
+            if (participant.user.key() == user.key()) or user.role == "admin" and not participant.game.is_active:
                 result.append(participant.game)
         return result
     return list()
@@ -101,7 +101,7 @@ def delete_game(game_id=None, user=None):
     """
     if user is not None and game_id is not None:
         game = Game.get(game_id)
-        if game.owner.key() == user.key():
+        if game.owner.key() == user.key() or user.role == "admin":
             for treasure in game.treasures:
                 db.delete(treasure.images)
                 db.delete(treasure)
@@ -142,7 +142,8 @@ def win_game(game=None, winner=None, owner=None):
     :param winner: winner of the game
     :param owner: owner of the game
     """
-    if game is not None and winner is not None and owner is not None and game.owner.key() == owner.key():
+    if game is not None and winner is not None and owner is not None and (
+            game.owner.key() == owner.key() or owner.role == "admin"):
         game.winner = winner
         game.is_active = False
         Game.save(game)
@@ -156,7 +157,7 @@ def reopen_game(game=None, user=None):
     :param user: user that reopens the game, must be the owner of the game
     """
 
-    if game is not None and user is not None and game.owner.key() == user.key():
+    if game is not None and user is not None and (game.owner.key() == user.key() or user.role == "admin"):
         game.winner = None
         game.is_active = True
         for treasure in game.treasures:
@@ -212,7 +213,8 @@ def write_game_json(game=None, user=None, map_json=None):
     :param map_json: json to write in map property of game
     :return: game updated
     """
-    if game is not None and user is not None and user.key() == game.owner.key() and map_json is not None:
+    if game is not None and user is not None and (
+            user.key() == game.owner.key() or user.role == "admin") and map_json is not None:
         create_treasures_with_json(game=game, user=user, map_json=json.loads(map_json))
         print(map_json)
         game.map = json.dumps(map_json)
@@ -261,7 +263,7 @@ def get_snapshots_by_game(owner=None, game=None):
     :return: participant, images tuples in case that all parameters are provided. Otherwise its returns a None
     """
     result = list()
-    if owner is not None and game is not None and owner.key() == game.owner.key():
+    if owner is not None and game is not None and (owner.key() == game.owner.key() or owner.role == "admin"):
         for participant in game.participants:
             images = len(filter(lambda image: image.treasure in game.treasures, participant.user.images))
             result.append((participant.user, images))
@@ -328,7 +330,6 @@ def create_treasures_with_json(game=None, user=None, map_json=None):
         for feature in map_json.get('features'):
             feature_type = feature.get('geometry').get('type')
             if feature_type == "Polygon":
-                # TODO sustituir con constructor de zona
                 print("create_zone")
             elif feature_type == "Point":
                 if feature.get('geometry').get('coordinates') is not None and feature.get('properties').get(
@@ -364,7 +365,8 @@ def create_treasure(game=None, user=None, name=None, lat=None, lon=None, descrip
     :param game(Game): game owner of the treasure
     :return: Treasure
     """
-    if name is not None and lat is not None and lon is not None and user is not None and user.key() == game.owner.key():
+    if name is not None and lat is not None and lon is not None and user is not None and (
+            user.key() == game.owner.key() or user.role == "admin"):
         return Treasure.get_or_insert(key_name=name + '_' + str(lat) + '_' + str(lon), lat=lat, lon=lon,
                                       name=name,
                                       description=description,
@@ -379,7 +381,7 @@ def delete_all_game_treasures(user=None, game=None):
         :param game: game to eliminate treasures
         :raise: TransactionFailedError: if the data could not be committed.
         """
-    if user is not None and game is not None and user.key() == game.owner.key():
+    if user is not None and game is not None and (user.key() == game.owner.key() or user.role == "admin"):
         db.delete(game.treasures)
 
 
@@ -440,7 +442,7 @@ def delete_snapshot_by_admin(admin=None, user=None, treasure=None):
     :raise: TransactionFailedError: if the data could not be committed.
     """
     if user is not None and treasure is not None and admin is not None:
-        if treasure.game.owner.key() == admin.key():
+        if treasure.game.owner.key() == admin.key() or admin.role == "admin":
             snapshot = get_snapshot_by_user_treasure(user=user, treasure=treasure)
             db.delete(snapshot)
 

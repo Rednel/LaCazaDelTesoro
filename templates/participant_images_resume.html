@@ -17,7 +17,7 @@
 
             <h1>Tesoros desenterrados por el pirata {{ player.email }} en la caza {{ game.name }}</h1>
 
-            {% if game.owner==user %}
+            {% if game.owner==user or user.role == "admin" %}
 
                 <table class="table">
                     <thead>
