@@ -26,8 +26,14 @@ def render_games_form_post(user):
     name = request.form.get('inputGameName')
     if name != "":
         game = models.facade.get_or_insert_game(name=name, owner=user)
-        send_twitter_message_init(game=game)
-        send_facebook_message_init(game=game)
+        try:
+            send_twitter_message_init(game=game)
+        except Exception:
+            return "Error Twitter"
+        try:
+            send_facebook_message_init(game=game)
+        except Exception:
+            return "Error Facebook"
         return redirect(url_for("game_views.show_created_games"))
     else:
         return render_template('new_game_form.html')

@@ -1,6 +1,9 @@
-facebook-sdk
-twitter
-webapp2
+requests
+oauthlib
+Flask
+Werkzeug
 google
-flask
-jinja2
+flask_dance
+requests-toolbelt
+twitter
+facebook-sdk

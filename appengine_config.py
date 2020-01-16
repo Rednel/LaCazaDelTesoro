@@ -6,6 +6,6 @@ import os.path
 from google.appengine.ext import vendor
 
 # Add any libraries installed in the "lib" folder.
-#vendor.add('lib')
+vendor.add('lib')
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'lib'))

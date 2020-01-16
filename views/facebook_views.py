@@ -42,9 +42,13 @@ def log_out_facebook(user):
 def send_facebook_message_init(game=None):
     if game is None:
         return
-    message = "The new game of @[{creator_tag_id}] is open!! Search it for his creator \"{name}\"" \
-              " or by the game name \"{game_name}\"".format(creator_tag_id=game.owner.facebook_tag_id,
-                                                            game_name=game.name, name=game.owner.name)
+    if game.owner.facebook_tag is None:
+        message = "The new game of {name} is open!! Search it for his name" \
+                  " or by the game name \"{game_name}\"".format(game_name=game.name, name=game.owner.name)
+    else:
+        message = "The new game of @[{creator_tag_id}] is open!! Search it for his creator \"{name}\"" \
+                  " or by the game name \"{game_name}\"".format(creator_tag_id=game.owner.facebook_tag_id,
+                                                                game_name=game.name, name=game.owner.name)
     return graph.put_object("me", "feed", message=message)
 
 

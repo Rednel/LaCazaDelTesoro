@@ -19,7 +19,7 @@ img{
 .msg-header{
     border: 1px solid #ccc;
     width: 100%;
-    height: 10%;
+    /*height: 10%;*/
     border-bottom: none;
     display: inline-block;
     background-color: #007bff;
@@ -89,7 +89,6 @@ height: 200px; }
 .msg-page {
     height: 400px;
     overflow-y: auto;
-
 }
 
 

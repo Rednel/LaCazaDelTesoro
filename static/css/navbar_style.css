@@ -38,7 +38,7 @@ body, html {
   height: 100%;
 }
 
-.bg {
+.bg1 {
   /* The image used */
   background-image: url("../images/background.jpeg");
 
@@ -52,21 +52,49 @@ body, html {
   background-size: cover;
 }
 
-.bg:before{
+.bg1:before{
   content: "";
   position: absolute;
+  height: 100%;
   top: 0;
   bottom: 0;
   right: 0;
   left: 0;
   background-color: rgba(255, 255, 255, 0.6);
+  /*margin-top: 82px;*/
+}
+
+.bg2 {
+  /* The image used */
+  background-image: url("../images/background.jpeg");
+
+  /* Full height */
+  height: 100%;
+
+  /* Center and scale the image nicely */
+  /*opacity:0.2;*/
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.bg2:before{
+  content: "";
+  position: absolute;
+  height: 100%;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  background-color: rgba(255, 255, 255, 0.6);
+  margin-top: 82px;
 }
 
 .carlos{
   position: relative;
   top: 50%;
   left: 50%;
-  transform: translate(-50%,-55%);
+  transform: translate(-50%,-50%);
   /*margin-top: -10px;*/
 }
 

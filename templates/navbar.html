@@ -17,7 +17,7 @@
 
 <body>
 {% if user != None %}
-    <nav class="navbar navbar-light navbar-expand-xl sticky-top shadow" style="background-color: #e3f2fd;">
+    <nav class="navbar navbar-light navbar-expand-xl sticky-top shadow" style="background-color: #e3f2fd; min-height: 82px">
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#toggler_id"
                 aria-controls="toggler_id" aria-expanded="false" aria-label="Navegación">
             <span class="navbar-toggler-icon"></span>
@@ -68,11 +68,19 @@
         </div>
     </nav>
 {% endif %}
-<div class="bg">
-    <div class="carlos">
-        {% block content %}{% endblock %}
+{% if user != None %}
+    <div class="bg2" style="min-height: 700px;">
+        <div class="carlos">
+            {% block content %}{% endblock %}
+        </div>
     </div>
-</div>
+{% else %}
+    <div class="bg1">
+        <div class="carlos">
+            {% block content2 %}{% endblock %}
+        </div>
+    </div>
+{% endif %}
 
 {% block js %}
     <!-- Optional JavaScript -->
