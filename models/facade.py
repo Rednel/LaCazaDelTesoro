@@ -10,6 +10,7 @@ import json
 
 
 def owning_game(element, user):
+    print(user.role)
     return element.owner.key() == user.key() or user.role == "admin"
 
 
@@ -192,7 +193,7 @@ def get_game_by_id(game_id=None):
     return Game.get(game_id)
 
 
-def exists_game(game=None):
+def exists_game(game_name=None, user=None):
     """Get a boolean value corresponding with the evidence of an existing game provided in db
         Args:
             :param game: The game to search in db
@@ -200,9 +201,9 @@ def exists_game(game=None):
         Returns:
             Boolean: Specify if the game is already stored in db
     """
-    if game is None or game.name is None or game.owner is None or game.owner.email is None:
+    if game_name is None or user is None:
         return False
-    return Game.get_by_key_name(key_names=game.owner.email + "_" + game.name) is not None
+    return Game.get_by_key_name(key_names=user.email + "_" + game_name) is not None
 
 
 def write_game_json(game=None, user=None, map_json=None):
